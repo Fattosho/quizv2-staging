@@ -18,7 +18,11 @@ function normalizeMediaUrl(url) {
   }
 
   if (url.startsWith("/")) {
-    return `${String(process.env.WAHA_BASE_URL || "http://localhost:3000").replace(/\/$/, "")}${url}`;
+    return `${String(
+      process.env.WAHA_BASE_URL ||
+        process.env.RAILWAY_SERVICE_WAHA_ALERTAS_DUDA_URL ||
+        "http://localhost:3000",
+    ).replace(/\/$/, "")}${url}`;
   }
 
   if (process.env.WAHA_MEDIA_BASE_URL) {

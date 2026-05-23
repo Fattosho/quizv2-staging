@@ -1,5 +1,9 @@
 function normalizeBaseUrl() {
-  return String(process.env.WAHA_BASE_URL || "http://localhost:3000").replace(/\/$/, "");
+  return String(
+    process.env.WAHA_BASE_URL ||
+      process.env.RAILWAY_SERVICE_WAHA_ALERTAS_DUDA_URL ||
+      "http://localhost:3000",
+  ).replace(/\/$/, "");
 }
 
 function getHeaders() {
