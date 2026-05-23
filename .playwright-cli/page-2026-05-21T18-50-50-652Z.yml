@@ -1,0 +1,57 @@
+- main [ref=e3]:
+  - generic [ref=e39]:
+    - group "Você vai fazer o ENEM/vestibular quando?" [ref=e40]:
+      - generic [ref=e41]: Você vai fazer o ENEM/vestibular quando?
+      - generic [ref=e42]:
+        - generic [ref=e43] [cursor=pointer]:
+          - radio "Neste ano" [checked] [active] [ref=e44]
+          - generic [ref=e45]: Neste ano
+        - generic [ref=e46] [cursor=pointer]:
+          - radio "Ano que vem" [ref=e47]
+          - generic [ref=e48]: Ano que vem
+        - generic [ref=e49] [cursor=pointer]:
+          - radio "Ainda não tenho certeza" [ref=e50]
+          - generic [ref=e51]: Ainda não tenho certeza
+        - generic [ref=e52] [cursor=pointer]:
+          - radio "Estou começando a me preparar com antecedência" [ref=e53]
+          - generic [ref=e54]: Estou começando a me preparar com antecedência
+    - group "Hoje você se sente em qual fase?" [ref=e55]:
+      - generic [ref=e56]: Hoje você se sente em qual fase?
+      - generic [ref=e57]:
+        - generic [ref=e58] [cursor=pointer]:
+          - radio "Estou começando do zero" [ref=e59]
+          - generic [ref=e60]: Estou começando do zero
+        - generic [ref=e61] [cursor=pointer]:
+          - radio "Já estudo, mas sem rotina" [ref=e62]
+          - generic [ref=e63]: Já estudo, mas sem rotina
+        - generic [ref=e64] [cursor=pointer]:
+          - radio "Estudo bastante, mas minha nota não sobe" [ref=e65]
+          - generic [ref=e66]: Estudo bastante, mas minha nota não sobe
+        - generic [ref=e67] [cursor=pointer]:
+          - radio "Tenho uma base boa, mas quero evoluir mais" [ref=e68]
+          - generic [ref=e69]: Tenho uma base boa, mas quero evoluir mais
+        - generic [ref=e70] [cursor=pointer]:
+          - radio "Estou perdido e não sei por onde começar" [ref=e71]
+          - generic [ref=e72]: Estou perdido e não sei por onde começar
+    - group "Em qual área você mais trava?" [ref=e73]:
+      - generic [ref=e74]: Em qual área você mais trava?
+      - generic [ref=e75]:
+        - generic [ref=e76] [cursor=pointer]:
+          - radio "Matemática" [ref=e77]
+          - generic [ref=e78]: Matemática
+        - generic [ref=e79] [cursor=pointer]:
+          - radio "Naturezas" [ref=e80]
+          - generic [ref=e81]: Naturezas
+        - generic [ref=e82] [cursor=pointer]:
+          - radio "Linguagens" [ref=e83]
+          - generic [ref=e84]: Linguagens
+        - generic [ref=e85] [cursor=pointer]:
+          - radio "Humanas" [ref=e86]
+          - generic [ref=e87]: Humanas
+        - generic [ref=e88] [cursor=pointer]:
+          - radio "Redação" [ref=e89]
+          - generic [ref=e90]: Redação
+        - generic [ref=e91] [cursor=pointer]:
+          - radio "Todas um pouco" [ref=e92]
+          - generic [ref=e93]: Todas um pouco
+    - button "Continuar" [disabled] [ref=e94]

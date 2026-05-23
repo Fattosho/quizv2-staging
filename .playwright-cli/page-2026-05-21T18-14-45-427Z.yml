@@ -1,0 +1,10 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - paragraph [ref=e8]: Diagnóstico personalizado
+      - heading "Tem gente que ainda não sabe por onde começar. Tem gente que já estuda, mas continua travada. E tem gente que está a poucos pontos da aprovação." [level=1] [ref=e9]:
+        - generic [ref=e10]: Tem gente que ainda não sabe por onde começar.
+        - generic [ref=e11]: Tem gente que já estuda, mas continua travada.
+        - strong [ref=e12]: E tem gente que está a poucos pontos da aprovação.
+      - paragraph [ref=e13]: Descubra em qual momento você está e receba uma análise completa, pensada por mim, para o seu próximo passo.
+    - button "Ver meu diagnóstico" [ref=e14] [cursor=pointer]

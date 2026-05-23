@@ -1,0 +1,9 @@
+- main [ref=e3]:
+  - generic [ref=e148]:
+    - generic [ref=e149]:
+      - generic [ref=e150]:
+        - text: Antes de eu te mostrar o próximo passo,
+        - strong [ref=e151]: me conta onde você sente que está hoje.
+      - textbox "Antes de eu te mostrar o próximo passo, me conta onde você sente que está hoje." [ref=e152]:
+        - /placeholder: "Ex: começando do zero, travada, perdida no estudo, ou por pouco da aprovação"
+    - button "Receber meu diagnóstico" [disabled] [ref=e153]

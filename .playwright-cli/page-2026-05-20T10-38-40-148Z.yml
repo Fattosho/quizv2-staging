@@ -1,0 +1,7 @@
+- main [ref=e3]:
+  - generic [ref=e147]:
+    - generic [ref=e148]:
+      - generic [ref=e149]: O que mais está impedindo você de evoluir hoje?
+      - textbox "O que mais está impedindo você de evoluir hoje?" [ref=e150]:
+        - /placeholder: Digite aqui
+    - button "Enviar meu diagnóstico" [disabled] [ref=e151]

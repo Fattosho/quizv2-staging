@@ -1,0 +1,9 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - heading "Acesso antecipado ao método secreto da Duda que vai mudar a forma como você estuda." [level=1] [ref=e8]:
+        - text: Acesso antecipado ao
+        - strong [ref=e9]: método secreto da Duda
+        - text: que vai mudar a forma como você estuda.
+      - paragraph [ref=e10]: Responda o diagnóstico e receba um plano desenhado pela Duda para você
+    - button "Começar" [ref=e11] [cursor=pointer]

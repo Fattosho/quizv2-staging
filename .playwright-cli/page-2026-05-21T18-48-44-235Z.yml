@@ -1,0 +1,10 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e7]:
+      - paragraph [ref=e8]: Diagnóstico personalizado
+      - heading "Não sabe por onde começar? Já estuda, mas continua travada? Ou está a poucos pontos da aprovação?" [level=1] [ref=e9]:
+        - generic [ref=e10]: Não sabe por onde começar?
+        - generic [ref=e11]: Já estuda, mas continua travada?
+        - strong [ref=e12]: Ou está a poucos pontos da aprovação?
+      - paragraph [ref=e13]: Descubra o seu momento atual e receba uma análise completa, pensada por mim, para o seu próximo passo.
+    - button "Ver meu diagnóstico" [ref=e14] [cursor=pointer]

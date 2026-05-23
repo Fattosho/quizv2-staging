@@ -1,0 +1,11 @@
+- main [ref=e3]:
+  - generic [ref=e154]:
+    - heading "Diagnóstico enviado com sucesso." [level=1] [ref=e155]:
+      - generic [ref=e156]: Diagnóstico enviado
+      - strong [ref=e157]: com sucesso.
+    - generic [ref=e160]:
+      - paragraph [ref=e161]:
+        - text: Nossa equipe vai analisar suas respostas e entrar em contato pelo
+        - strong [ref=e162]: WhatsApp
+        - text: para te mostrar o próximo passo para acessar o método da Duda.
+      - paragraph [ref=e163]: "Fique atento: as condições de acesso antecipado serão liberadas primeiro para quem respondeu o diagnóstico."

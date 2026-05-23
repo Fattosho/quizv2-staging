@@ -1,0 +1,264 @@
+{
+  "contacts": [
+    {
+      "id": "ct_6666d999",
+      "name": "Lead Teste",
+      "phone": "5511999999999",
+      "waId": "5511999999999",
+      "stage": "novo",
+      "tags": [],
+      "lastInboundAt": "2026-05-22T06:49:25.818Z",
+      "createdAt": "2026-05-22T05:52:26.647Z",
+      "updatedAt": "2026-05-22T06:49:25.818Z"
+    },
+    {
+      "id": "ct_82660b23",
+      "name": "Livia Martins",
+      "phone": "5511984442140",
+      "waId": "5511984442140",
+      "stage": "diagnostico",
+      "tags": [
+        "quiz"
+      ],
+      "lastInboundAt": "2026-05-22T05:55:41.046Z",
+      "createdAt": "2026-05-22T05:55:41.046Z",
+      "updatedAt": "2026-05-22T05:55:41.046Z"
+    },
+    {
+      "id": "ct_f743d878",
+      "name": "Camila Rocha",
+      "phone": "5521977318092",
+      "waId": "5521977318092",
+      "stage": "diagnostico",
+      "tags": [
+        "quiz"
+      ],
+      "lastInboundAt": "2026-05-22T05:55:41.050Z",
+      "createdAt": "2026-05-22T05:55:41.050Z",
+      "updatedAt": "2026-05-22T05:55:41.050Z"
+    },
+    {
+      "id": "ct_2a67c0a6",
+      "name": "Beatriz Lima",
+      "phone": "5531991124068",
+      "waId": "5531991124068",
+      "stage": "diagnostico",
+      "tags": [
+        "quiz"
+      ],
+      "lastInboundAt": "2026-05-22T05:55:41.058Z",
+      "createdAt": "2026-05-22T05:55:41.058Z",
+      "updatedAt": "2026-05-22T05:55:41.058Z"
+    },
+    {
+      "id": "ct_ba94306f",
+      "name": "Julia Andrade",
+      "phone": "5511988776655",
+      "waId": "5511988776655",
+      "stage": "novo",
+      "tags": [],
+      "lastInboundAt": "2026-05-22T05:55:41.064Z",
+      "createdAt": "2026-05-22T05:55:41.064Z",
+      "updatedAt": "2026-05-22T05:55:41.064Z"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "cv_dfe032ff",
+      "contactId": "ct_6666d999",
+      "status": "open",
+      "assignedTo": "",
+      "channel": "whatsapp",
+      "unreadCount": 0,
+      "lastMessageAt": "2026-05-22T06:49:25.818Z",
+      "createdAt": "2026-05-22T05:52:26.647Z",
+      "updatedAt": "2026-05-22T07:18:18.696Z"
+    },
+    {
+      "id": "cv_1f670dea",
+      "contactId": "ct_82660b23",
+      "status": "open",
+      "assignedTo": "",
+      "channel": "whatsapp",
+      "unreadCount": 0,
+      "lastMessageAt": "2026-05-22T05:55:41.046Z",
+      "createdAt": "2026-05-22T05:55:41.046Z",
+      "updatedAt": "2026-05-22T05:55:41.098Z"
+    },
+    {
+      "id": "cv_45cf1256",
+      "contactId": "ct_f743d878",
+      "status": "open",
+      "assignedTo": "",
+      "channel": "whatsapp",
+      "unreadCount": 1,
+      "lastMessageAt": "2026-05-22T05:55:41.050Z",
+      "createdAt": "2026-05-22T05:55:41.050Z",
+      "updatedAt": "2026-05-22T05:55:41.050Z"
+    },
+    {
+      "id": "cv_03001638",
+      "contactId": "ct_2a67c0a6",
+      "status": "open",
+      "assignedTo": "",
+      "channel": "whatsapp",
+      "unreadCount": 0,
+      "lastMessageAt": "2026-05-22T05:55:41.058Z",
+      "createdAt": "2026-05-22T05:55:41.058Z",
+      "updatedAt": "2026-05-22T05:59:31.681Z"
+    },
+    {
+      "id": "cv_6725e012",
+      "contactId": "ct_ba94306f",
+      "status": "open",
+      "assignedTo": "",
+      "channel": "whatsapp",
+      "unreadCount": 0,
+      "lastMessageAt": "2026-05-22T05:55:41.064Z",
+      "createdAt": "2026-05-22T05:55:41.064Z",
+      "updatedAt": "2026-05-22T06:48:42.067Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg_c280a21b",
+      "conversationId": "cv_dfe032ff",
+      "contactId": "ct_6666d999",
+      "direction": "inbound",
+      "type": "text",
+      "body": "Oi, quero receber meu diagnostico.",
+      "waMessageId": "mock_1779429146647",
+      "status": "received",
+      "raw": null,
+      "createdAt": "2026-05-22T05:52:26.647Z"
+    },
+    {
+      "id": "msg_9e0a3425",
+      "conversationId": "cv_1f670dea",
+      "contactId": "ct_82660b23",
+      "direction": "inbound",
+      "type": "quiz",
+      "body": "Diagnostico preenchido: travada_sem_rotina",
+      "waMessageId": null,
+      "status": "received",
+      "raw": null,
+      "createdAt": "2026-05-22T05:55:41.046Z"
+    },
+    {
+      "id": "msg_5934cd28",
+      "conversationId": "cv_45cf1256",
+      "contactId": "ct_f743d878",
+      "direction": "inbound",
+      "type": "quiz",
+      "body": "Diagnostico preenchido: comecando_do_zero",
+      "waMessageId": null,
+      "status": "received",
+      "raw": null,
+      "createdAt": "2026-05-22T05:55:41.050Z"
+    },
+    {
+      "id": "msg_df0630a1",
+      "conversationId": "cv_03001638",
+      "contactId": "ct_2a67c0a6",
+      "direction": "inbound",
+      "type": "quiz",
+      "body": "Diagnostico preenchido: nota_estagnada",
+      "waMessageId": null,
+      "status": "received",
+      "raw": null,
+      "createdAt": "2026-05-22T05:55:41.058Z"
+    },
+    {
+      "id": "msg_25c7700d",
+      "conversationId": "cv_6725e012",
+      "contactId": "ct_ba94306f",
+      "direction": "inbound",
+      "type": "text",
+      "body": "Oi, terminei o quiz e queria entender meu diagnostico.",
+      "waMessageId": "mock_1779429341064",
+      "status": "received",
+      "raw": null,
+      "createdAt": "2026-05-22T05:55:41.064Z"
+    },
+    {
+      "id": "msg_8aace5a0",
+      "conversationId": "cv_dfe032ff",
+      "contactId": "ct_6666d999",
+      "direction": "inbound",
+      "type": "text",
+      "body": "Oi, quero receber meu diagnostico.",
+      "waMessageId": "mock_1779432565818",
+      "status": "received",
+      "raw": null,
+      "createdAt": "2026-05-22T06:49:25.818Z"
+    }
+  ],
+  "diagnostics": [
+    {
+      "id": "dx_f48c16d8",
+      "contactId": "ct_82660b23",
+      "conversationId": "cv_1f670dea",
+      "name": "Livia Martins",
+      "whatsapp": "(11) 98444-2140",
+      "objective": "Passar em Medicina",
+      "examWhen": "Neste ano",
+      "studyPhase": "Ja estudo, mas sem rotina",
+      "blockedArea": "Naturezas",
+      "frustration": "Nao saber se estou evoluindo",
+      "guidedRoutine": "",
+      "interest": "Sim, quero muito",
+      "openAnswer": "Eu estudo, mas sinto que nao tenho uma direcao clara.",
+      "profile": "travada_sem_rotina",
+      "summary": "O maior gargalo parece ser constancia. Ela ja tem contato com os estudos, mas falta um plano semanal claro e revisao guiada.",
+      "recommendedAction": "Enviar plano de rotina guiada, reforcar acompanhamento e propor proximo passo com a equipe.",
+      "createdAt": "2026-05-22T05:55:41.046Z"
+    },
+    {
+      "id": "dx_d4ec7793",
+      "contactId": "ct_f743d878",
+      "conversationId": "cv_45cf1256",
+      "name": "Camila Rocha",
+      "whatsapp": "(21) 97731-8092",
+      "objective": "Passar em uma universidade publica",
+      "examWhen": "Ano que vem",
+      "studyPhase": "Estou comecando do zero",
+      "blockedArea": "Matematica",
+      "frustration": "Nao ter alguem me dizendo o que fazer",
+      "guidedRoutine": "",
+      "interest": "Sim, quero entender melhor",
+      "openAnswer": "Preciso organizar minha base desde o inicio.",
+      "profile": "comecando_do_zero",
+      "summary": "A aluna precisa de direcao inicial. O diagnostico indica dificuldade para organizar a base e decidir por onde comecar.",
+      "recommendedAction": "Enviar mensagem acolhedora, explicar trilha inicial e convidar para entender a preparacao guiada.",
+      "createdAt": "2026-05-22T05:55:41.050Z"
+    },
+    {
+      "id": "dx_a3a0b329",
+      "contactId": "ct_2a67c0a6",
+      "conversationId": "cv_03001638",
+      "name": "Beatriz Lima",
+      "whatsapp": "(31) 99112-4068",
+      "objective": "Conseguir bolsa pelo ENEM",
+      "examWhen": "Neste ano",
+      "studyPhase": "Estudo bastante, mas minha nota nao sobe",
+      "blockedArea": "Redacao",
+      "frustration": "Errar questoes que eu achava que sabia",
+      "guidedRoutine": "",
+      "interest": "Talvez, depende do valor",
+      "openAnswer": "Tenho medo de estar estudando errado.",
+      "profile": "nota_estagnada",
+      "summary": "A aluna estuda, mas provavelmente esta repetindo um metodo que nao transforma erro em evolucao mensuravel.",
+      "recommendedAction": "Falar sobre analise de erros, revisao ativa e estrategia por area de maior impacto.",
+      "createdAt": "2026-05-22T05:55:41.058Z"
+    }
+  ],
+  "templates": [
+    {
+      "id": "diagnostico_pronto",
+      "name": "diagnostico_pronto",
+      "category": "MARKETING",
+      "language": "pt_BR",
+      "body": "Ola, {{1}}. Seu diagnostico de estudos ficou pronto. Posso te enviar por aqui?"
+    }
+  ]
+}

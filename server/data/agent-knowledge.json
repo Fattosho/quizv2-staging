@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "method": {
+    "name": "Metodo Duda Farage",
+    "positioning": "Diagnostico, rotina guiada, base bem feita, revisao ativa, pratica por questoes, correcao de rota e acompanhamento.",
+    "pillars": [
+      "diagnostico do momento atual",
+      "construcao de base",
+      "rotina guiada",
+      "questoes com revisao dos erros",
+      "acompanhamento e ajuste de rota"
+    ]
+  },
+  "safety": {
+    "doNotPromise": [
+      "aprovacao garantida",
+      "nota garantida",
+      "resultado sem estudo",
+      "desconto, vaga ou preco nao configurado"
+    ],
+    "handoffTopics": [
+      "preco",
+      "valor",
+      "matricula",
+      "parcelamento",
+      "boleto",
+      "pix",
+      "contrato",
+      "certificado",
+      "falar com humano",
+      "atendente"
+    ]
+  },
+  "conversation": {
+    "maxBubblesPerTurn": 3,
+    "defaultQuestion": "Faz sentido pra voce se eu te mostrar qual seria o primeiro passo da sua rotina guiada?",
+    "audioFallback": "Recebi seu audio. Para nao te responder algo raso, vou te guiar por aqui com uma pergunta bem objetiva."
+  },
+  "studyTopics": {
+    "matematica": {
+      "label": "Matematica",
+      "phase1": [
+        "operacoes basicas",
+        "potenciacao e radiciacao",
+        "razao, proporcao e porcentagem",
+        "regra de tres",
+        "equacoes de primeiro e segundo grau",
+        "geometria plana",
+        "areas de figuras planas",
+        "graficos e tabelas"
+      ],
+      "phase2": [
+        "conjuntos",
+        "funcoes",
+        "trigonometria basica",
+        "geometria espacial",
+        "exponenciais e logaritmos",
+        "PA e PG"
+      ],
+      "phase3": [
+        "matrizes e determinantes",
+        "sistemas lineares",
+        "geometria analitica",
+        "analise combinatoria",
+        "probabilidade",
+        "complexos e polinomios"
+      ]
+    },
+    "naturezas": {
+      "label": "Naturezas",
+      "phase1": [
+        "base de quimica geral",
+        "ecologia e citologia",
+        "ondas e optica",
+        "estequiometria inicial",
+        "composicao celular",
+        "graficos e interpretacao de fenomenos"
+      ],
+      "phase2": [
+        "quimica ambiental",
+        "genetica e evolucao",
+        "eletricidade e magnetismo",
+        "funcoes inorganicas",
+        "revisao por questoes"
+      ],
+      "phase3": [
+        "organica e fisico-quimica",
+        "zoologia e fisiologia",
+        "mecanica",
+        "eletroquimica",
+        "termoquimica",
+        "questoes de alta complexidade"
+      ]
+    },
+    "quimica": {
+      "label": "Quimica",
+      "phase1": [
+        "materia e estados fisicos",
+        "separacao de misturas",
+        "mol e massa molar",
+        "balanceamento",
+        "estequiometria",
+        "ligacoes quimicas e tabela periodica"
+      ],
+      "phase2": [
+        "quimica ambiental",
+        "polimeros",
+        "funcoes inorganicas",
+        "reacoes inorganicas"
+      ],
+      "phase3": [
+        "quimica organica",
+        "solucoes",
+        "eletroquimica",
+        "equilibrio quimico",
+        "termoquimica",
+        "cinetica e radioatividade"
+      ]
+    },
+    "biologia": {
+      "label": "Biologia",
+      "phase1": [
+        "ecologia",
+        "ciclos biogeoquimicos",
+        "origem da vida",
+        "estrutura celular",
+        "composicao quimica celular",
+        "bioenergetica"
+      ],
+      "phase2": [
+        "genetica molecular",
+        "leis de Mendel",
+        "heranca sexual",
+        "engenharia genetica",
+        "evolucao",
+        "reinos"
+      ],
+      "phase3": [
+        "zoologia",
+        "fisiologia animal",
+        "histologia",
+        "fisiologia vegetal",
+        "morfologia vegetal"
+      ]
+    },
+    "fisica": {
+      "label": "Fisica",
+      "phase1": [
+        "ondas",
+        "som",
+        "fenomenos ondulatorios",
+        "optica geometrica",
+        "reflexao e refracao"
+      ],
+      "phase2": [
+        "eletrostatica",
+        "campo eletrico",
+        "corrente eletrica",
+        "resistores",
+        "magnetismo",
+        "inducao eletromagnetica"
+      ],
+      "phase3": [
+        "cinematica",
+        "dinamica",
+        "leis de Newton",
+        "mecanica energetica",
+        "quantidade de movimento",
+        "estatica e hidrostatica"
+      ]
+    },
+    "humanas": {
+      "label": "Humanas",
+      "phase1": [
+        "historia antiga e medieval",
+        "cartografia",
+        "clima",
+        "fundamentos da sociologia",
+        "filosofia antiga"
+      ],
+      "phase2": [
+        "renascimento e reformas",
+        "revolucoes modernas",
+        "globalizacao",
+        "geografia do Brasil",
+        "teorias sociologicas classicas"
+      ],
+      "phase3": [
+        "guerras mundiais",
+        "guerra fria",
+        "geopolitica mundial",
+        "questoes contemporaneas",
+        "filosofia moderna"
+      ]
+    },
+    "linguagens": {
+      "label": "Linguagens",
+      "phase1": [
+        "interpretacao de texto",
+        "generos textuais",
+        "funcoes da linguagem",
+        "trovadorismo",
+        "humanismo"
+      ],
+      "phase2": [
+        "barroco",
+        "arcadismo",
+        "romantismo",
+        "realismo",
+        "naturalismo"
+      ],
+      "phase3": [
+        "parnasianismo",
+        "simbolismo",
+        "modernismo",
+        "literatura contemporanea",
+        "analise de provas"
+      ]
+    },
+    "redacao": {
+      "label": "Redacao",
+      "phase1": [
+        "estrutura do texto dissertativo",
+        "tese",
+        "topico frasal",
+        "coesao",
+        "repertorio basico"
+      ],
+      "phase2": [
+        "argumentacao",
+        "desenvolvimento",
+        "proposta de intervencao",
+        "correcao guiada",
+        "reescrita"
+      ],
+      "phase3": [
+        "temas complexos",
+        "repertorio autoral",
+        "sofisticacao argumentativa",
+        "simulado e correcao fina"
+      ]
+    }
+  }
+}

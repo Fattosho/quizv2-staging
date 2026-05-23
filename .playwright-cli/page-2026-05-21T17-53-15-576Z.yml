@@ -1,0 +1,25 @@
+- main [ref=e3]:
+  - generic [ref=e11]:
+    - group "Qual seu objetivo principal hoje?" [ref=e12]:
+      - generic [ref=e13]: Qual seu objetivo principal hoje?
+      - generic [ref=e14]:
+        - generic [ref=e15] [cursor=pointer]:
+          - radio "Passar em Medicina" [checked] [active] [ref=e16]
+          - generic [ref=e17]: Passar em Medicina
+        - generic [ref=e18] [cursor=pointer]:
+          - radio "Passar em uma universidade pública" [ref=e19]
+          - generic [ref=e20]: Passar em uma universidade pública
+        - generic [ref=e21] [cursor=pointer]:
+          - radio "Conseguir bolsa pelo ENEM" [ref=e22]
+          - generic [ref=e23]: Conseguir bolsa pelo ENEM
+        - generic [ref=e24] [cursor=pointer]:
+          - radio "Passar em um curso concorrido" [ref=e25]
+          - generic [ref=e26]: Passar em um curso concorrido
+    - generic [ref=e27]:
+      - generic [ref=e28]: Qual seu nome?
+      - textbox "Qual seu nome?" [ref=e29]
+    - generic [ref=e30]:
+      - generic [ref=e31]: Qual seu WhatsApp?
+      - textbox "Qual seu WhatsApp?" [ref=e32]
+    - paragraph [ref=e33]: É por aqui que nossa equipe vai te enviar o diagnóstico
+    - button "Continuar" [disabled] [ref=e34]

@@ -1,0 +1,54 @@
+- main [ref=e3]:
+  - generic [ref=e92]:
+    - group "O que mais te frustra na sua preparação?" [ref=e93]:
+      - generic [ref=e94]: O que mais te frustra na sua preparação?
+      - generic [ref=e95]:
+        - generic [ref=e96] [cursor=pointer]:
+          - radio "Estudar e esquecer depois" [ref=e97]
+          - generic [ref=e98]: Estudar e esquecer depois
+        - generic [ref=e99] [cursor=pointer]:
+          - radio "Não saber se estou evoluindo" [ref=e100]
+          - generic [ref=e101]: Não saber se estou evoluindo
+        - generic [ref=e102] [cursor=pointer]:
+          - radio "Errar questões que eu achava que sabia" [ref=e103]
+          - generic [ref=e104]: Errar questões que eu achava que sabia
+        - generic [ref=e105] [cursor=pointer]:
+          - radio "Começar animado e depois parar" [ref=e106]
+          - generic [ref=e107]: Começar animado e depois parar
+        - generic [ref=e108] [cursor=pointer]:
+          - radio "Não ter alguém me dizendo o que fazer" [ref=e109]
+          - generic [ref=e110]: Não ter alguém me dizendo o que fazer
+    - group "Se você tivesse um plano mais claro, você estaria disposto a seguir uma rotina guiada?" [ref=e111]:
+      - generic [ref=e112]: Se você tivesse um plano mais claro, você estaria disposto a seguir uma rotina guiada?
+      - generic [ref=e113]:
+        - generic [ref=e114] [cursor=pointer]:
+          - radio "Sim, eu só preciso de direção" [ref=e115]
+          - generic [ref=e116]: Sim, eu só preciso de direção
+        - generic [ref=e117] [cursor=pointer]:
+          - radio "Sim, mas tenho dificuldade com disciplina" [ref=e118]
+          - generic [ref=e119]: Sim, mas tenho dificuldade com disciplina
+        - generic [ref=e120] [cursor=pointer]:
+          - radio "Talvez, depende de como funcionar" [ref=e121]
+          - generic [ref=e122]: Talvez, depende de como funcionar
+        - generic [ref=e123] [cursor=pointer]:
+          - radio "Não sei se conseguiria seguir" [ref=e124]
+          - generic [ref=e125]: Não sei se conseguiria seguir
+    - group "Você teria interesse em entrar em uma preparação guiada pela Duda?" [ref=e126]:
+      - generic [ref=e127]: Você teria interesse em entrar em uma preparação guiada pela Duda?
+      - generic [ref=e128]:
+        - generic [ref=e129] [cursor=pointer]:
+          - radio "Sim, quero muito" [ref=e130]
+          - generic [ref=e131]: Sim, quero muito
+        - generic [ref=e132] [cursor=pointer]:
+          - radio "Sim, quero entender melhor" [ref=e133]
+          - generic [ref=e134]: Sim, quero entender melhor
+        - generic [ref=e135] [cursor=pointer]:
+          - radio "Talvez, depende do valor" [ref=e136]
+          - generic [ref=e137]: Talvez, depende do valor
+        - generic [ref=e138] [cursor=pointer]:
+          - radio "Ainda não sei" [ref=e139]
+          - generic [ref=e140]: Ainda não sei
+        - generic [ref=e141] [cursor=pointer]:
+          - radio "Não tenho interesse agora" [ref=e142]
+          - generic [ref=e143]: Não tenho interesse agora
+    - button "Continuar" [disabled] [ref=e144]
