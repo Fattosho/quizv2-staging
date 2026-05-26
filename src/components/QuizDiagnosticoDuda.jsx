@@ -440,10 +440,13 @@ export default function QuizDiagnosticoDuda() {
     const submitRequest = api
       .createDiagnostic(payload)
       .then((result) => {
-        if (result?.sheetsForwardError) {
+        const sheetsForwardConfirmed =
+          result?.sheetsForward && !result?.sheetsForwardError;
+
+        if (!sheetsForwardConfirmed) {
           console.warn(
-            "Google Sheets nao confirmou o recebimento pelo backend; acionando fallback do navegador.",
-            result.sheetsForwardError,
+            "Google Sheets nao confirmou o recebimento pelo backend; acionando envio pelo navegador.",
+            result?.sheetsForwardError || null,
           );
           return sendLegacyWebhook(payload)
             .catch((legacyError) => {
