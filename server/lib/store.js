@@ -67,6 +67,21 @@ export function normalizePhone(phone = "") {
   return digits.startsWith("55") ? digits : `55${digits}`;
 }
 
+function phoneVariants(phone = "") {
+  const normalized = normalizePhone(phone);
+  const variants = new Set(normalized ? [normalized] : []);
+
+  if (normalized.startsWith("55") && normalized.length === 13 && normalized[4] === "9") {
+    variants.add(`${normalized.slice(0, 4)}${normalized.slice(5)}`);
+  }
+
+  if (normalized.startsWith("55") && normalized.length === 12) {
+    variants.add(`${normalized.slice(0, 4)}9${normalized.slice(4)}`);
+  }
+
+  return [...variants].filter(Boolean);
+}
+
 export function createId(prefix) {
   return `${prefix}_${randomUUID().slice(0, 8)}`;
 }
@@ -128,13 +143,15 @@ function classifyDiagnostic(answers) {
 
 export function upsertContact(store, input) {
   const phone = normalizePhone(input.phone ?? input.whatsapp ?? input.waId);
+  const variants = phoneVariants(phone);
   const existing =
-    store.contacts.find((contact) => contact.phone === phone) ??
-    store.contacts.find((contact) => contact.waId === phone);
+    store.contacts.find((contact) => input.waId && contact.waId === input.waId) ??
+    store.contacts.find((contact) => variants.includes(contact.phone)) ??
+    store.contacts.find((contact) => variants.includes(contact.waId));
 
   if (existing) {
     existing.name = input.name || existing.name || "Sem nome";
-    existing.phone = phone || existing.phone;
+    existing.phone = existing.phone || phone;
     existing.waId = input.waId || phone || existing.waId;
     existing.updatedAt = now();
     return existing;

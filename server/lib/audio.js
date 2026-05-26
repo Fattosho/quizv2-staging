@@ -2,8 +2,16 @@ function getElevenLabsApiKey() {
   return process.env.ELEVENLABS_API_KEY || "";
 }
 
+function getGeminiApiKey() {
+  return process.env.GEMINI_API_KEY || "";
+}
+
 function getProvider() {
   return String(process.env.AUDIO_TRANSCRIPTION_PROVIDER || "elevenlabs").toLowerCase();
+}
+
+export function getAudioTranscriptionProvider() {
+  return getProvider();
 }
 
 function getMediaHeaders() {
@@ -139,7 +147,80 @@ async function transcribeWithElevenLabs({ buffer, mimetype, filename }) {
 }
 
 export function isAudioTranscriptionEnabled() {
-  return getProvider() === "elevenlabs" && Boolean(getElevenLabsApiKey());
+  if (getProvider() === "elevenlabs") {
+    return Boolean(getElevenLabsApiKey());
+  }
+
+  if (getProvider() === "gemini") {
+    return Boolean(getGeminiApiKey());
+  }
+
+  return false;
+}
+
+async function transcribeWithGemini({ buffer, mimetype }) {
+  if (!getGeminiApiKey()) {
+    const error = new Error("GEMINI_API_KEY nao configurada");
+    error.code = "missing_gemini_key";
+    throw error;
+  }
+
+  const model = process.env.GEMINI_STT_MODEL || process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": getGeminiApiKey(),
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text:
+                  "Transcreva este audio de WhatsApp em portugues do Brasil. Responda somente com o texto falado, sem comentarios.",
+              },
+              {
+                inlineData: {
+                  mimeType: mimetype || "audio/ogg",
+                  data: buffer.toString("base64"),
+                },
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0,
+          maxOutputTokens: 512,
+        },
+      }),
+    },
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(data?.error?.message || "Falha na transcricao Gemini");
+    error.code = "gemini_stt_failed";
+    error.meta = data;
+    throw error;
+  }
+
+  const text = data?.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text || "")
+    .join(" ")
+    .replace(/^["']|["']$/g, "")
+    .trim();
+
+  return {
+    provider: "gemini",
+    model,
+    text,
+    language: "pt-BR",
+    raw: data,
+  };
 }
 
 export async function transcribeAudioMessage(message) {
@@ -147,7 +228,7 @@ export async function transcribeAudioMessage(message) {
     return null;
   }
 
-  if (getProvider() !== "elevenlabs") {
+  if (!["elevenlabs", "gemini"].includes(getProvider())) {
     return {
       provider: getProvider(),
       text: "",
@@ -157,10 +238,12 @@ export async function transcribeAudioMessage(message) {
 
   try {
     const mediaFile = await downloadMedia(message.raw?.media);
-    return await transcribeWithElevenLabs(mediaFile);
+    return getProvider() === "gemini"
+      ? await transcribeWithGemini(mediaFile)
+      : await transcribeWithElevenLabs(mediaFile);
   } catch (error) {
     return {
-      provider: "elevenlabs",
+      provider: getProvider(),
       text: "",
       error: error.message,
       code: error.code || "audio_transcription_failed",

@@ -41,8 +41,12 @@ const STEP_TWO_OBJECTIVE = {
   options: [
     "Passar em Medicina",
     "Passar em uma universidade pública",
-    "Conseguir bolsa pelo ENEM",
-    "Passar em um curso concorrido",
+    "Conseguir PROUNI ou FIES",
+    {
+      value: "Passar em um curso concorrido",
+      label: "Passar em um curso concorrido",
+      description: "Ex: Engenharia, Direito, Psicologia, Odonto...",
+    },
   ],
 };
 
@@ -53,7 +57,6 @@ const STEP_THREE_GROUPS = [
     options: [
       "Neste ano",
       "Ano que vem",
-      "Ainda não tenho certeza",
       "Estou começando a me preparar com antecedência",
     ],
   },
@@ -62,10 +65,10 @@ const STEP_THREE_GROUPS = [
     question: "Hoje você se sente em qual fase?",
     options: [
       "Estou começando do zero",
-      "Já estudo, mas sem rotina",
+      "Já estudo, mas não tenho uma rotina constante",
       "Estudo bastante, mas minha nota não sobe",
-      "Tenho uma base boa, mas quero evoluir mais",
-      "Estou perdido e não sei por onde começar",
+      "Tenho uma base boa, mas ainda perco pontos que não deveria",
+      "Me sinto perdida(o) e não sei o que priorizar",
     ],
   },
   {
@@ -203,18 +206,32 @@ function RadioGroup({ group, value, onChange, compact = false }) {
     <fieldset className={`quiz-fieldset ${compact ? "quiz-fieldset--compact" : ""}`}>
       <legend>{group.question}</legend>
       <div className="quiz-options">
-        {group.options.map((option, index) => (
-          <label className="quiz-option" key={option} style={{ "--i": index }}>
-            <input
-              checked={value === option}
-              name={group.id}
-              onChange={() => onChange(group.id, option)}
-              type="radio"
-              value={option}
-            />
-            <span>{option}</span>
-          </label>
-        ))}
+        {group.options.map((option, index) => {
+          const optionValue = typeof option === "string" ? option : option.value;
+          const optionLabel = typeof option === "string" ? option : option.label;
+          const optionDescription =
+            typeof option === "string" ? "" : option.description;
+
+          return (
+            <label className="quiz-option" key={optionValue} style={{ "--i": index }}>
+              <input
+                checked={value === optionValue}
+                name={group.id}
+                onChange={() => onChange(group.id, optionValue)}
+                type="radio"
+                value={optionValue}
+              />
+              <span className="quiz-option__content">
+                <span className="quiz-option__label">{optionLabel}</span>
+                {optionDescription && (
+                  <small className="quiz-option__description">
+                    {optionDescription}
+                  </small>
+                )}
+              </span>
+            </label>
+          );
+        })}
       </div>
     </fieldset>
   );

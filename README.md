@@ -91,6 +91,22 @@ PIPER_SERVER_URL=http://localhost:5000
 PIPER_TTS_PATH=/tts
 ```
 
+## Teste Local com Gemini + Windows
+
+Para testar sem chave da ElevenLabs, use Gemini para transcrever o audio recebido e a voz local do Windows para gerar a resposta:
+
+```bash
+AUDIO_TRANSCRIPTION_PROVIDER=gemini
+GEMINI_STT_MODEL=gemini-2.5-flash-lite
+TTS_PROVIDER=windows
+ENABLE_AUDIO_REPLIES=true
+AUDIO_REPLY_MODE=smart
+AUDIO_ONLY_WHEN_USER_SENDS_AUDIO=true
+AUDIO_STORAGE_ENABLED=true
+```
+
+Esse modo e indicado para teste local. Em Railway/Linux, prefira ElevenLabs, Azure, OpenAI ou Piper.
+
 ## Testar WAHA
 
 1. Configure o webhook do WAHA para `message` e `message.ack`.
@@ -126,6 +142,9 @@ Variaveis recomendadas no staging:
 ```bash
 AUTO_SEND_FIRST_CONTACT=false
 LEAD_AGENT_ENABLED=true
+LEAD_AGENT_AI_PROVIDER=gemini
+GEMINI_API_KEY=sua_chave_google_ai_studio
+GEMINI_MODEL=gemini-2.5-flash-lite
 LEAD_GROUP_FORWARD_ENABLED=true
 LEAD_GROUP_CHAT_ID=120363xxxxxxxxxxxx@g.us
 ENABLE_AUDIO_REPLIES=false
@@ -151,3 +170,22 @@ ENABLE_AUDIO_REPLIES=false
 ```
 
 Isso reduz risco de bloqueio do numero por disparo ativo.
+
+## IA opcional no agente
+
+O agente funciona sem IA externa, usando regras locais. Para respostas mais naturais em teste, use Gemini:
+
+1. Crie uma chave em [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Configure:
+
+```bash
+LEAD_AGENT_AI_PROVIDER=gemini
+LEAD_AGENT_AI_FOR_FLOW=false
+GEMINI_API_KEY=sua_chave
+GEMINI_MODEL=gemini-2.5-flash-lite
+LEAD_AGENT_MAX_BUBBLE_CHARS=115
+```
+
+`LEAD_AGENT_AI_FOR_FLOW=false` mantem o fluxo guiado sob controle do sistema. Assim a IA melhora respostas abertas, mas nao trava repetindo a mesma pergunta quando a lead diz "sim" ou "mostre".
+
+O Gemini tem free tier para testes, com limites menores e uso sujeito as regras da Google. Em producao, mantenha fallback local ativo e acompanhe limites/privacidade.

@@ -45,7 +45,12 @@ function getWahaHeaders() {
 function toWahaChatId(to) {
   const value = String(to || "").trim();
 
-  if (value.endsWith("@c.us") || value.endsWith("@g.us") || value.endsWith("@newsletter")) {
+  if (
+    value.endsWith("@c.us") ||
+    value.endsWith("@g.us") ||
+    value.endsWith("@lid") ||
+    value.endsWith("@newsletter")
+  ) {
     return value;
   }
 
@@ -62,6 +67,29 @@ function fromWahaChatId(chatId) {
     .replace("@s.whatsapp.net", "")
     .replace("@c.us", "")
     .replace("@lid", "");
+}
+
+export async function resolveWahaPhoneId(waId) {
+  const value = String(waId || "").trim();
+
+  if (getProvider() !== "waha" || !value.endsWith("@lid")) {
+    return fromWahaChatId(value);
+  }
+
+  try {
+    const session = process.env.WAHA_SESSION || "default";
+    const response = await fetch(
+      `${normalizeWahaBaseUrl()}/api/${session}/lids/${encodeURIComponent(value)}`,
+      {
+        headers: getWahaHeaders(),
+      },
+    );
+    const data = await response.json().catch(() => ({}));
+
+    return data?.pn ? fromWahaChatId(data.pn) : fromWahaChatId(value);
+  } catch {
+    return fromWahaChatId(value);
+  }
 }
 
 function getWahaMessageId(result) {
@@ -320,7 +348,7 @@ function parseWahaWebhookPayload(body) {
     ];
   }
 
-  if (!event.startsWith("message")) {
+  if (!event.startsWith("message") || event === "message.any") {
     return [];
   }
 
@@ -344,7 +372,8 @@ function parseWahaWebhookPayload(body) {
   return [
     {
       kind: "message",
-      waId: fromWahaChatId(chatId),
+      waId: chatId,
+      phone: fromWahaChatId(chatId),
       name: payload.notifyName || payload.pushName || payload.sender?.pushName,
       type,
       body: bodyText,

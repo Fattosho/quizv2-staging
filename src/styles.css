@@ -708,6 +708,18 @@ textarea {
   display: block;
 }
 
+.quiz-option__content {
+  min-width: 0;
+}
+
+.quiz-option__description {
+  margin-top: 3px;
+  color: color-mix(in srgb, var(--quiz-muted-text) 70%, transparent);
+  font-size: 10.8px;
+  font-weight: 500;
+  line-height: 1.28;
+}
+
 .quiz-option:hover {
   border-color: color-mix(in srgb, var(--quiz-accent) 68%, transparent);
   background: color-mix(

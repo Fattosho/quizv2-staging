@@ -2,6 +2,7 @@
   "version": 1,
   "method": {
     "name": "Metodo Duda Farage",
+    "role": "assistente virtual da equipe da Duda Farage e diagnosticador educacional para leads de quiz",
     "positioning": "Diagnostico, rotina guiada, base bem feita, revisao ativa, pratica por questoes, correcao de rota e acompanhamento.",
     "pillars": [
       "diagnostico do momento atual",
@@ -27,6 +28,15 @@
       "pix",
       "contrato",
       "certificado",
+      "programacao",
+      "programacao guiada",
+      "como funciona",
+      "quero entrar",
+      "quero participar",
+      "inscricao",
+      "inscrever",
+      "investimento",
+      "proximos passos",
       "falar com humano",
       "atendente"
     ]
@@ -35,6 +45,70 @@
     "maxBubblesPerTurn": 3,
     "defaultQuestion": "Faz sentido pra voce se eu te mostrar qual seria o primeiro passo da sua rotina guiada?",
     "audioFallback": "Recebi seu audio. Para nao te responder algo raso, vou te guiar por aqui com uma pergunta bem objetiva."
+  },
+  "communication": {
+    "coreArguments": [
+      "o quiz mostra o momento real da lead, nao uma resposta generica",
+      "o cronograma e dividido por fase para evitar estudar tudo ao mesmo tempo",
+      "primeiro vem base, depois consolidacao, depois desafio avancado",
+      "rotina guiada evita comecar animada e parar no meio",
+      "questoes e revisao dos erros mostram se a pessoa esta evoluindo",
+      "acompanhamento serve para corrigir a rota antes de acumular atraso"
+    ],
+    "quizSignalArguments": {
+      "objective": "Conecte o objetivo da lead com a necessidade de priorizar o que mais cai e o que mais trava.",
+      "examWhen": "Se a prova esta perto, fale de foco e corte de excesso. Se esta longe, fale de base bem feita.",
+      "studyPhase": "Use a fase marcada para justificar por que ela nao deve copiar cronograma pronto.",
+      "blockedArea": "Use a area travada para citar no maximo dois topicos iniciais do cronograma.",
+      "frustration": "Valide a frustracao como falta de metodo, ordem ou acompanhamento, nao como incapacidade.",
+      "guidedRoutine": "Se ela demonstrou abertura, conduza para ver um exemplo de rotina guiada.",
+      "interest": "Se o interesse e alto, avance para proximo passo. Se e morno, eduque sem pressionar."
+    },
+    "toneRules": [
+      "mensagens curtas, uma ideia por bolha",
+      "tom de conversa no WhatsApp, nao aula e nao texto de landing page",
+      "agir como pessoa da equipe, nunca como chatbot generico",
+      "nunca dizer que e IA ou que esta lendo CRM",
+      "usar a marcacao do quiz para parecer especifico",
+      "evitar lista longa de conteudos",
+      "usar no maximo tres topicos por resposta",
+      "fazer uma pergunta por vez",
+      "nao repetir a mesma estrutura em toda resposta",
+      "conduzir sempre para um microproximo passo"
+    ],
+    "phaseMappings": {
+      "comecando_do_zero": {
+        "label": "Fase 1 - construcao de base",
+        "message": "precisa construir base, rotina e ordem de estudo"
+      },
+      "perdido": {
+        "label": "Fase 1 - construcao de base",
+        "message": "precisa de direcao inicial e trilha clara"
+      },
+      "sem_rotina": {
+        "label": "transicao entre Fase 1 e Fase 2",
+        "message": "precisa transformar esforco solto em rotina guiada"
+      },
+      "base_boa": {
+        "label": "Fase 2 - consolidacao e expansao",
+        "message": "precisa consolidar, revisar e expandir"
+      },
+      "nota_estagnada": {
+        "label": "Fase 3 - dominio e desafios avancados",
+        "message": "precisa de analise de erro, metodo e refinamento"
+      }
+    },
+    "handoffMessages": {
+      "general": "Vou pedir para uma pessoa da equipe continuar com voce. Ela consegue olhar seu diagnostico com calma e explicar a programacao certinho.",
+      "price": "Como depende do seu momento e do formato mais indicado, o ideal e a equipe te passar certinho para nao te mandar uma informacao incompleta.",
+      "dependsOnPrice": "Antes de olhar so para o valor, o importante e entender se a programacao faz sentido para o seu momento."
+    },
+    "microCommitments": [
+      "quer que eu te mostre o primeiro passo?",
+      "quer ver um exemplo de rotina?",
+      "posso te mostrar como eu organizaria essa semana?",
+      "faz sentido eu te explicar por onde comecar?"
+    ]
   },
   "studyTopics": {
     "matematica": {
@@ -47,7 +121,7 @@
         "equacoes de primeiro e segundo grau",
         "geometria plana",
         "areas de figuras planas",
-        "graficos e tabelas"
+        "visualizacao espacial, tabelas e graficos"
       ],
       "phase2": [
         "conjuntos",
@@ -238,6 +312,156 @@
         "repertorio autoral",
         "sofisticacao argumentativa",
         "simulado e correcao fina"
+      ]
+    },
+    "historia": {
+      "label": "Historia",
+      "phase1": [
+        "introducao a historia",
+        "primeiras civilizacoes",
+        "Grecia e Roma",
+        "Alta Idade Media",
+        "feudalismo"
+      ],
+      "phase2": [
+        "Baixa Idade Media",
+        "primeira globalizacao",
+        "Renascimento",
+        "Reforma Religiosa",
+        "Absolutismo",
+        "Iluminismo"
+      ],
+      "phase3": [
+        "Revolucao Industrial",
+        "Revolucao Francesa",
+        "imperialismo",
+        "guerras mundiais",
+        "Guerra Fria",
+        "America Latina no seculo XX"
+      ]
+    },
+    "geografia_geral": {
+      "label": "Geografia Geral",
+      "phase1": [
+        "coordenadas geograficas",
+        "movimentos da Terra",
+        "fuso horario",
+        "cartografia",
+        "clima"
+      ],
+      "phase2": [
+        "geomorfologia mundial",
+        "biogeografia mundial",
+        "hidrogeografia mundial",
+        "globalizacao",
+        "blocos economicos"
+      ],
+      "phase3": [
+        "desigualdades globais",
+        "agricultura e industria mundial",
+        "geopolitica mundial",
+        "terrorismo",
+        "Africa e Oriente Medio",
+        "questao da Palestina"
+      ]
+    },
+    "geografia_brasil": {
+      "label": "Geografia do Brasil",
+      "phase1": [
+        "geologia e geomorfologia",
+        "relevo e pedologia",
+        "climatologia",
+        "biogeografia",
+        "hidrogeografia do Brasil"
+      ],
+      "phase2": [
+        "dominios morfoclimaticos",
+        "politicas ambientais brasileiras",
+        "matriz energetica brasileira",
+        "combustiveis fosseis e biocombustiveis",
+        "energia eletrica"
+      ],
+      "phase3": [
+        "producao mineral",
+        "demografia e fluxos migratorios",
+        "agricultura",
+        "industria",
+        "urbanizacao",
+        "transportes e comercio externo"
+      ]
+    },
+    "sociologia": {
+      "label": "Sociologia",
+      "phase1": [
+        "surgimento da sociologia",
+        "Auguste Comte",
+        "positivismo",
+        "Durkheim",
+        "fato social"
+      ],
+      "phase2": [
+        "Karl Marx",
+        "materialismo historico",
+        "mais-valia",
+        "luta de classes",
+        "Max Weber",
+        "acao social"
+      ],
+      "phase3": [
+        "sociologia no Brasil",
+        "raca e etnicidade",
+        "desigualdade social",
+        "globalizacao",
+        "movimentos sociais",
+        "cultura de massa"
+      ]
+    },
+    "filosofia": {
+      "label": "Filosofia",
+      "phase1": [
+        "pre-socraticos",
+        "Tales",
+        "Heraclito e Parmenides",
+        "Democrito",
+        "Socrates"
+      ],
+      "phase2": [
+        "Platao",
+        "Aristoteles",
+        "estoicismo",
+        "epicurismo",
+        "ceticismo"
+      ],
+      "phase3": [
+        "Santo Agostinho",
+        "Sao Tomas de Aquino",
+        "Descartes",
+        "Locke e Hume",
+        "contratualismo"
+      ]
+    },
+    "literatura": {
+      "label": "Literatura",
+      "phase1": [
+        "Trovadorismo",
+        "Humanismo",
+        "Renascimento",
+        "Camoes",
+        "Barroco"
+      ],
+      "phase2": [
+        "Arcadismo",
+        "Romantismo",
+        "Realismo",
+        "Naturalismo",
+        "Parnasianismo"
+      ],
+      "phase3": [
+        "Simbolismo",
+        "Modernismo",
+        "Semana de Arte Moderna",
+        "literatura contemporanea",
+        "analise de obras"
       ]
     }
   }

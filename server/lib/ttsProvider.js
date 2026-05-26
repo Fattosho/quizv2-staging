@@ -1,3 +1,8 @@
+import { spawn } from "node:child_process";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 function getProvider() {
   return String(process.env.TTS_PROVIDER || "elevenlabs").toLowerCase();
 }
@@ -163,6 +168,71 @@ async function generateWithPiper(text, options = {}) {
   return toResult("piper", buffer, contentType);
 }
 
+function runPowerShell(script, env) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      "powershell",
+      ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script],
+      {
+        env: { ...process.env, ...env },
+        windowsHide: true,
+      },
+    );
+    let stderr = "";
+
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
+
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+
+      reject(new Error(stderr.trim() || `Windows TTS falhou com codigo ${code}`));
+    });
+  });
+}
+
+async function generateWithWindowsSpeech(text) {
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "quizv2-tts-"));
+  const textPath = path.join(tempDir, "input.txt");
+  const outputPath = path.join(tempDir, "output.wav");
+  const script = `
+Add-Type -AssemblyName System.Speech
+$synth = New-Object System.Speech.Synthesis.SpeechSynthesizer
+$voice = $env:WINDOWS_TTS_VOICE
+if ($voice) {
+  try { $synth.SelectVoice($voice) } catch {}
+}
+$rate = 0
+if ([int]::TryParse($env:WINDOWS_TTS_RATE, [ref]$rate)) { $synth.Rate = $rate }
+$volume = 90
+if ([int]::TryParse($env:WINDOWS_TTS_VOLUME, [ref]$volume)) { $synth.Volume = $volume }
+$text = Get-Content -LiteralPath $env:TTS_TEXT_PATH -Raw
+$synth.SetOutputToWaveFile($env:TTS_OUTPUT_PATH)
+$synth.Speak($text)
+$synth.Dispose()
+`.trim();
+
+  try {
+    await fs.writeFile(textPath, text, "utf8");
+    await runPowerShell(script, {
+      TTS_TEXT_PATH: textPath,
+      TTS_OUTPUT_PATH: outputPath,
+    });
+    const buffer = await fs.readFile(outputPath);
+
+    return toResult("windows", buffer, "audio/wav", {
+      voice: process.env.WINDOWS_TTS_VOICE || "default",
+    });
+  } finally {
+    await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
 export async function generateSpeech(text, options = {}) {
   const provider = options.provider || getProvider();
 
@@ -180,6 +250,10 @@ export async function generateSpeech(text, options = {}) {
 
   if (provider === "piper") {
     return generateWithPiper(text, options);
+  }
+
+  if (provider === "windows") {
+    return generateWithWindowsSpeech(text, options);
   }
 
   throw new Error("TTS_PROVIDER invalido");

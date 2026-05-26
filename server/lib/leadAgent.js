@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { buildAiLeadAgentReply } from "./aiReplyProvider.js";
 import { createId } from "./store.js";
 
 const KNOWLEDGE_FILE = path.resolve("server", "data", "agent-knowledge.json");
@@ -8,18 +9,49 @@ const DEFAULT_HANDOFF_KEYWORDS = [
   "atendente",
   "humano",
   "matricula",
+  "inscricao",
+  "inscrever",
   "preco",
+  "valores",
   "valor",
+  "investimento",
   "quanto custa",
+  "depende do valor",
   "parcel",
   "boleto",
   "pix",
   "contrato",
+  "programacao",
+  "programacao guiada",
+  "como funciona",
+  "quero entrar",
+  "quero participar",
+  "proximos passos",
 ];
 
 const GREETING_KEYWORDS = ["oi", "ola", "bom dia", "boa tarde", "boa noite"];
 const DIAGNOSTIC_KEYWORDS = ["diagnostico", "resultado", "quiz", "rotina", "resumo"];
 const OBJECTION_KEYWORDS = ["nao consigo", "dificil", "sem tempo", "medo", "travada", "perdida"];
+const NEXT_STEP_KEYWORDS = ["claro", "mostre", "sim", "quero", "pode", "vamos", "ok", "manda"];
+const NEGATIVE_KEYWORDS = ["agora nao", "depois", "nao quero", "nao precisa", "prefiro nao", "sem interesse"];
+const ROUTINE_KEYWORDS = ["rotina", "semana", "7 dias", "sete dias", "crie", "monta", "modelo"];
+const AVAILABILITY_KEYWORDS = [
+  "dia",
+  "dias",
+  "semana",
+  "hora",
+  "horas",
+  "manha",
+  "tarde",
+  "noite",
+  "segunda",
+  "terca",
+  "quarta",
+  "quinta",
+  "sexta",
+  "sabado",
+  "domingo",
+];
 
 const REPERTOIRE = {
   opener: [
@@ -109,6 +141,7 @@ function ensureAgentSession(store, conversation, contact) {
       lastProfile: "",
       lastTemperature: "",
       lastQuestion: "",
+      flowStage: "new",
       handledMessageIds: [],
       recentInbound: [],
       outboundTimestamps: [],
@@ -202,8 +235,14 @@ function detectAreaKey(diagnostic, text, knowledge) {
     ["biologia", ["biologia", "bio"]],
     ["fisica", ["fisica"]],
     ["naturezas", ["naturezas", "ciencias da natureza"]],
-    ["humanas", ["humanas", "historia", "geografia", "sociologia", "filosofia"]],
-    ["linguagens", ["linguagens", "literatura", "portugues", "interpretacao"]],
+    ["historia", ["historia"]],
+    ["geografia_geral", ["geografia geral", "geopolitica mundial", "cartografia mundial"]],
+    ["geografia_brasil", ["geografia do brasil", "brasil", "matriz energetica", "urbanizacao"]],
+    ["sociologia", ["sociologia"]],
+    ["filosofia", ["filosofia"]],
+    ["literatura", ["literatura"]],
+    ["humanas", ["humanas", "geografia"]],
+    ["linguagens", ["linguagens", "portugues", "interpretacao"]],
     ["redacao", ["redacao", "redigir", "texto"]],
   ];
 
@@ -229,6 +268,48 @@ function detectPhaseKey(profile) {
   }
 
   return "phase1";
+}
+
+function getPhaseReading(profile) {
+  if (profile === "iniciante" || profile === "comecando_do_zero") {
+    return {
+      label: "O Iniciante",
+      message: "a aluna precisa construir base, rotina e ordem de estudo",
+    };
+  }
+
+  if (profile === "inconstante" || profile === "sem_rotina") {
+    return {
+      label: "O Inconstante",
+      message: "a aluna precisa transformar esforco solto em rotina guiada",
+    };
+  }
+
+  if (profile === "quase_la" || profile === "base_boa" || profile === "alta_intencao") {
+    return {
+      label: "O Quase Lá",
+      message: "a aluna precisa refinar revisao, estrategia e perda de pontos",
+    };
+  }
+
+  if (profile === "esforcado_travado" || profile === "nota_estagnada") {
+    return {
+      label: "O Esforçado Travado",
+      message: "a aluna precisa de analise de erro, metodo e refinamento",
+    };
+  }
+
+  if (profile === "sem_direcao") {
+    return {
+      label: "O Sem Direção",
+      message: "a aluna precisa de prioridade clara e trilha de estudo",
+    };
+  }
+
+  return {
+    label: "diagnostico educacional",
+    message: "a lead precisa de uma trilha clara a partir do momento atual",
+  };
 }
 
 function buildStudyPath(diagnostic, text, knowledge) {
@@ -270,6 +351,10 @@ function getIntent({ inboundMessage, text, diagnostic, handoffKeywords }) {
     return "handoff";
   }
 
+  if (diagnostic && includesAny(text, NEXT_STEP_KEYWORDS)) {
+    return "next_step";
+  }
+
   if (includesAny(text, OBJECTION_KEYWORDS)) {
     return "objection";
   }
@@ -296,18 +381,322 @@ function compactMessages(messages, maxBubbles) {
     )
     .filter((message) => message.body || message.url);
 
-  if (cleaned.length <= maxBubbles) {
-    return cleaned;
+  const maxChars = Number(process.env.LEAD_AGENT_MAX_BUBBLE_CHARS || 115);
+  const shortened = cleaned.flatMap((message) => {
+    if (message.type !== "text" || message.body.length <= maxChars) {
+      return [message];
+    }
+
+    const sentences = message.body
+      .split(/(?<=[.!?])\s+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    if (sentences.length <= 1) {
+      return [{ ...message, body: `${message.body.slice(0, maxChars - 3).trim()}...` }];
+    }
+
+    return sentences.map((body) => ({ ...message, body }));
+  });
+
+  const cleanedShort = shortened.slice(0, Math.max(1, maxBubbles));
+
+  if (cleanedShort.length <= maxBubbles) {
+    return cleanedShort;
   }
 
-  const head = cleaned.slice(0, maxBubbles - 1);
-  const tail = cleaned
+  const head = cleanedShort.slice(0, maxBubbles - 1);
+  const tail = cleanedShort
     .slice(maxBubbles - 1)
     .filter((message) => message.type === "text")
     .map((message) => message.body)
     .join("\n\n");
 
   return [...head, { type: "text", body: tail }];
+}
+
+function getMeaningfulOpenAnswer(diagnostic) {
+  const answer = String(diagnostic?.openAnswer || "").trim();
+
+  if (answer.length < 12 || ["teste", "test", "nao sei"].includes(normalizeText(answer))) {
+    return "";
+  }
+
+  return answer.length > 90 ? `${answer.slice(0, 87).trim()}...` : answer;
+}
+
+function getDiagnosticSignals(diagnostic) {
+  return {
+    objective: diagnostic?.objective || "",
+    examWhen: diagnostic?.examWhen || "",
+    studyPhase: diagnostic?.studyPhase || "",
+    blockedArea: diagnostic?.blockedArea || "",
+    frustration: diagnostic?.frustration || "",
+    guidedRoutine: diagnostic?.guidedRoutine || "",
+    interest: diagnostic?.interest || "",
+    summary: diagnostic?.summary || "",
+    recommendedAction: diagnostic?.recommendedAction || "",
+    openAnswer: getMeaningfulOpenAnswer(diagnostic),
+  };
+}
+
+function getLeadArgument(signals, pathInfo) {
+  const frustration = normalizeText(signals.frustration);
+  const studyPhase = normalizeText(signals.studyPhase);
+  const examWhen = normalizeText(signals.examWhen);
+
+  if (frustration.includes("parar")) {
+    return "Aqui o risco nao e comecar. E manter uma rotina que nao dependa de animo.";
+  }
+
+  if (frustration.includes("errar") || frustration.includes("sabia")) {
+    return "O ponto e transformar erro em revisao, nao so fazer mais questoes.";
+  }
+
+  if (studyPhase.includes("zero") || studyPhase.includes("perdido")) {
+    return `Antes de acelerar, vale construir base em ${pathInfo.areaLabel}.`;
+  }
+
+  if (studyPhase.includes("sem rotina")) {
+    return "O gargalo parece mais ordem semanal do que falta de conteudo.";
+  }
+
+  if (examWhen.includes("neste ano")) {
+    return "Como a prova esta perto, precisa cortar excesso e priorizar o que destrava.";
+  }
+
+  return "O caminho e diagnosticar, priorizar e revisar antes de acumular materia.";
+}
+
+function getShortTopics(pathInfo) {
+  return pathInfo.topics.slice(0, 2).join(" e ");
+}
+
+function isBroadArea(pathInfo) {
+  return pathInfo.areaKey === "geral" || normalizeText(pathInfo.areaLabel).includes("base geral");
+}
+
+function hasAffirmation(text) {
+  return includesAny(text, NEXT_STEP_KEYWORDS);
+}
+
+function hasNegative(text) {
+  return text === "nao" || includesAny(text, NEGATIVE_KEYWORDS);
+}
+
+function hasRoutineRequest(text) {
+  return includesAny(text, ROUTINE_KEYWORDS);
+}
+
+function hasAvailabilitySignal(text) {
+  return /\b\d+\b/.test(text) || includesAny(text, AVAILABILITY_KEYWORDS);
+}
+
+function inferFlowStage(session) {
+  if (session.flowStage && session.flowStage !== "new") {
+    return session.flowStage;
+  }
+
+  const lastQuestion = normalizeText(session.lastQuestion);
+
+  if (lastQuestion.includes("modelo de rotina") || lastQuestion.includes("rotina de 7 dias")) {
+    return "asked_routine_model";
+  }
+
+  if (lastQuestion.includes("quantos dias") || lastQuestion.includes("consegue estudar")) {
+    return "asked_availability";
+  }
+
+  if (lastQuestion.includes("encaminh") || lastQuestion.includes("continuar por aqui")) {
+    return "asked_handoff";
+  }
+
+  if (lastQuestion.includes("primeiro passo") || lastQuestion.includes("comecaria")) {
+    return "asked_first_step";
+  }
+
+  return "new";
+}
+
+function getNextFlowStage({ session, intent, text }) {
+  const current = inferFlowStage(session);
+
+  if (intent === "handoff") {
+    return "handoff_requested";
+  }
+
+  if (hasNegative(text)) {
+    return "paused";
+  }
+
+  if (current === "asked_first_step" && hasAffirmation(text)) {
+    return "explaining_first_step";
+  }
+
+  if (current === "asked_routine_model" && (hasAffirmation(text) || hasRoutineRequest(text))) {
+    return "showing_routine_model";
+  }
+
+  if (current === "asked_availability" && (hasAvailabilitySignal(text) || text.length > 2)) {
+    return "qualifying_availability";
+  }
+
+  if (current === "asked_handoff" && hasAffirmation(text)) {
+    return "handoff_requested";
+  }
+
+  if (hasRoutineRequest(text)) {
+    return "showing_routine_model";
+  }
+
+  if (intent === "next_step" && current === "new") {
+    return "explaining_first_step";
+  }
+
+  if (intent === "next_step" && current === "explaining_first_step") {
+    return "showing_routine_model";
+  }
+
+  return current;
+}
+
+function getStageAfterReply(flowStage, intent, diagnostic) {
+  if (intent === "handoff" || flowStage === "handoff_requested") {
+    return "handoff_requested";
+  }
+
+  if (flowStage === "paused") {
+    return "paused";
+  }
+
+  if (flowStage === "explaining_first_step") {
+    return "asked_routine_model";
+  }
+
+  if (flowStage === "showing_routine_model") {
+    return "asked_availability";
+  }
+
+  if (flowStage === "qualifying_availability") {
+    return "asked_handoff";
+  }
+
+  if (diagnostic && ["follow_up", "diagnostic", "greeting"].includes(intent)) {
+    return "asked_first_step";
+  }
+
+  return flowStage || "new";
+}
+
+function getAvailabilityText(text) {
+  const cleaned = String(text || "").trim();
+
+  if (!cleaned) {
+    return "esse tempo";
+  }
+
+  return cleaned.length > 45 ? `${cleaned.slice(0, 42).trim()}...` : cleaned;
+}
+
+function buildFirstStepMessages(pathInfo) {
+  const [topicOne = "base", topicTwo = "questoes"] = pathInfo.topics;
+
+  if (isBroadArea(pathInfo)) {
+    return [
+      "Quando trava em varias materias, o problema costuma ser falta de trilha.",
+      "Para nao baguncar tudo, a gente escolhe uma prioridade primeiro.",
+      "Hoje pesa mais: Matematica, Naturezas, Humanas, Linguagens ou Redacao?",
+    ];
+  }
+
+  if (pathInfo.areaKey === "redacao") {
+    return [
+      "Em Redacao, eu nao montaria uma lista gigante agora.",
+      "O primeiro passo e entender se trava em estrutura, repertorio ou argumentacao.",
+      "Qual desses pontos mais pega para voce hoje?",
+    ];
+  }
+
+  return [
+    "Fechado. O primeiro passo nao e estudar tudo.",
+    `E destravar ${pathInfo.areaLabel} com ${topicOne} e ${topicTwo}.`,
+    "Quer que eu te mostre um modelo de rotina de 7 dias?",
+  ];
+}
+
+function buildRoutineModelMessages(pathInfo) {
+  const [topicOne = "base", topicTwo = "questoes"] = pathInfo.topics;
+
+  if (isBroadArea(pathInfo)) {
+    return [
+      "Modelo simples: escolher uma area principal e nao tentar atacar tudo junto.",
+      "Depois vem base, questoes e revisao dos erros nessa prioridade.",
+      "Qual area voce quer priorizar primeiro?",
+    ];
+  }
+
+  if (pathInfo.areaKey === "redacao") {
+    return [
+      "Modelo simples: estrutura, repertorio, pratica e correcao.",
+      "Sem inventar cronograma enorme antes de achar o ponto que trava.",
+      "Hoje voce trava mais em estrutura, repertorio ou argumentacao?",
+    ];
+  }
+
+  return [
+    "Modelo simples: 3 dias de base, 2 de questoes e 1 de revisao.",
+    `Na primeira semana, eu colocaria ${topicOne} e ${topicTwo}.`,
+    "Quantos dias por semana voce consegue estudar de verdade?",
+  ];
+}
+
+function buildAvailabilityMessages(text) {
+  return [
+    `Com ${getAvailabilityText(text)}, da para montar uma rotina enxuta.`,
+    "A ideia e caber na sua semana, sem virar um cronograma impossivel.",
+    "Quer que eu te encaminhe para a equipe continuar por aqui?",
+  ];
+}
+
+function buildHandoffRequestedMessages(contact, text = "", signals = {}) {
+  const name = firstName(contact);
+  const value = normalizeText(text);
+
+  if (value.includes("depende do valor")) {
+    return [
+      "Totalmente justo.",
+      `Pelo seu diagnostico, primeiro vale entender se faz sentido para ${signals.blockedArea || "seu momento"}.`,
+      "Posso pedir para alguem da equipe te explicar com calma?",
+    ];
+  }
+
+  if (
+    value.includes("preco") ||
+    value.includes("valor") ||
+    value.includes("valores") ||
+    value.includes("quanto custa") ||
+    value.includes("investimento")
+  ) {
+    return [
+      `${name ? `${name}, ` : ""}te explico sim.`,
+      "Como depende do seu momento, a equipe passa certinho para nao te mandar algo incompleto.",
+      "Posso pedir para alguem te chamar e explicar os valores?",
+    ];
+  }
+
+  return [
+    `${name ? `${name}, ` : ""}perfeito.`,
+    "Vou pedir para uma pessoa da equipe continuar com voce.",
+    "Ela consegue olhar seu diagnostico e explicar a programacao certinho.",
+  ];
+}
+
+function buildPausedMessages(pathInfo) {
+  return [
+    "Sem problema.",
+    `Se quiser continuar depois, eu retomo por ${pathInfo.areaLabel}.`,
+    "Posso te mandar so um resumo bem curto do primeiro passo?",
+  ];
 }
 
 function addOptionalVoice(messages, intent) {
@@ -339,78 +728,118 @@ function hasHitRateLimit(session) {
   return session.outboundTimestamps.length >= maxPerHour;
 }
 
-function buildMessages({ contact, diagnostic, intent, knowledge, pathInfo, profile, temperature, text, session }) {
+function buildMessages({
+  contact,
+  diagnostic,
+  intent,
+  knowledge,
+  pathInfo,
+  profile,
+  temperature,
+  text,
+  session,
+  flowStage,
+}) {
   const name = firstName(contact);
   const greeting = name ? `Oi, ${name}.` : "Oi.";
-  const seed = `${contact.id}:${session.turnCount}:${intent}`;
-  const opener = pick(REPERTOIRE.opener, seed);
-  const bridge = pick(REPERTOIRE.bridge, seed);
-  const question = pick(REPERTOIRE.question, seed) || knowledge.conversation.defaultQuestion;
-  const topicText = pathInfo.topics.slice(0, 3).join(", ");
+  const topicText = getShortTopics(pathInfo);
   const areaLabel = pathInfo.areaLabel;
-  const openAnswer = diagnostic?.openAnswer ? `E o que voce escreveu confirma isso: "${diagnostic.openAnswer}".` : "";
+  const signals = getDiagnosticSignals(diagnostic);
+  const phaseReading = getPhaseReading(profile);
+
+  if (flowStage === "paused") {
+    return buildPausedMessages(pathInfo);
+  }
 
   if (intent === "audio") {
     return [
-      `${greeting} ${knowledge.conversation.audioFallback}`,
+      `${greeting} recebi seu audio.`,
       diagnostic
-        ? `Pelo seu quiz, eu olharia primeiro para ${areaLabel}: ${topicText}.`
+        ? `Pelo quiz, eu olharia primeiro para ${areaLabel}.`
         : "Voce sente que esta comecando do zero, sem rotina ou travada mesmo estudando?",
     ];
   }
 
   if (intent === "handoff") {
-    return [
-      `${greeting} Entendi.`,
-      "Essa parte de valor, matricula ou condicao eu prefiro deixar com a equipe para te passar certinho, sem te falar algo incompleto.",
-      "Enquanto isso, me confirma: seu foco hoje e montar rotina, subir nota ou entender se a preparacao encaixa na sua fase?",
-    ];
+    return buildHandoffRequestedMessages(contact, text, signals);
   }
 
   if (intent === "objection") {
+    if (isBroadArea(pathInfo)) {
+      return [
+        `${greeting} entendo. Quando parece que trava tudo, geralmente falta trilha.`,
+        "O melhor e escolher uma prioridade antes de tentar resolver todas.",
+        "Hoje pesa mais: Matematica, Naturezas, Humanas, Linguagens ou Redacao?",
+      ];
+    }
+
     return [
       `${greeting} faz sentido voce se sentir assim.`,
-      "Quando a preparacao fica pesada, normalmente o problema nao e falta de vontade. E excesso de coisa sem uma ordem clara.",
+      "Geralmente nao e falta de vontade. E excesso de coisa sem ordem.",
       diagnostic
-        ? `No seu caso, eu comecaria por ${areaLabel}, puxando ${topicText}, sem tentar resolver tudo no mesmo dia.`
+        ? `No seu caso, eu comecaria por ${topicText}.`
         : "Me diz so uma coisa: hoje voce trava mais por falta de base, falta de rotina ou por esquecer depois?",
     ];
   }
 
+  if (flowStage === "handoff_requested") {
+    return buildHandoffRequestedMessages(contact, text, signals);
+  }
+
+  if (flowStage === "qualifying_availability") {
+    return buildAvailabilityMessages(text);
+  }
+
+  if (flowStage === "showing_routine_model") {
+    return buildRoutineModelMessages(pathInfo);
+  }
+
+  if (flowStage === "explaining_first_step" || (intent === "next_step" && diagnostic)) {
+    return buildFirstStepMessages(pathInfo);
+  }
+
   if (intent === "greeting" && !diagnostic) {
     return [
-      `${greeting} consigo te ajudar a entender seu melhor caminho de estudos.`,
-      "Para eu nao te responder no automatico: voce esta comecando do zero, sem rotina ou sente que sua nota travou?",
+      `${greeting} consigo te ajudar.`,
+      "Voce esta comecando do zero, sem rotina ou com a nota travada?",
     ];
   }
 
   if (!diagnostic) {
     return [
-      `${greeting} antes de te indicar um caminho, preciso entender seu momento real.`,
-      "Qual area mais te trava hoje: Matematica, Naturezas, Humanas, Linguagens ou Redacao?",
+      `${greeting} antes de indicar um caminho, preciso entender seu momento.`,
+      "Qual area mais te trava hoje?",
     ];
   }
 
-  const profileLine =
-    profile === "alta_intencao"
-      ? "Voce demonstrou bastante interesse em uma preparacao guiada, entao vale conduzir isso com prioridade."
-      : bridge;
+  if (isBroadArea(pathInfo)) {
+    return [
+      `${greeting} entendi seu momento pelo diagnostico.`,
+      "Quando trava em tudo um pouco, isso costuma ser falta de trilha clara.",
+      "Hoje pesa mais: Matematica, Naturezas, Humanas, Linguagens ou Redacao?",
+    ];
+  }
 
-  const temperatureLine =
-    temperature === "quente"
-      ? "Como voce ja parece mais decidida, o melhor e nao perder tempo com uma lista enorme de conteudos."
-      : "O primeiro passo e deixar claro o que vem antes, o que fica para depois e como revisar.";
+  if (pathInfo.areaKey === "naturezas") {
+    return [
+      `${greeting} entendi seu momento pelo diagnostico.`,
+      `Sua leitura parece: ${phaseReading.label}.`,
+      "Dentro de Naturezas, pesa mais Biologia, Quimica ou Fisica?",
+    ];
+  }
+
+  if (pathInfo.areaKey === "redacao") {
+    return [
+      `${greeting} entendi seu momento pelo diagnostico.`,
+      `Sua leitura parece: ${phaseReading.label}.`,
+      "Em Redacao, trava mais estrutura, repertorio ou argumentacao?",
+    ];
+  }
 
   return [
-    `${greeting} ${opener}`,
-    [
-      `Pelo seu quiz, o gargalo principal parece estar em ${areaLabel}.`,
-      openAnswer,
-      profileLine,
-    ]
-      .filter(Boolean)
-      .join(" "),
-    `${temperatureLine} Eu comecaria por ${topicText}. ${question}`,
+    `${greeting} entendi seu momento pelo diagnostico.`,
+    `Sua leitura parece: ${phaseReading.label}.`,
+    `Como trava em ${areaLabel}, eu comecaria por ${topicText}. Quer ver o primeiro passo?`,
   ];
 }
 
@@ -418,7 +847,7 @@ export function isLeadAgentEnabled() {
   return process.env.LEAD_AGENT_ENABLED === "true";
 }
 
-export function buildLeadAgentReply(store, { contact, conversation, inboundMessage }) {
+export async function buildLeadAgentReply(store, { contact, conversation, inboundMessage }) {
   if (!isLeadAgentEnabled() || !contact || !conversation || !inboundMessage) {
     return null;
   }
@@ -456,8 +885,10 @@ export function buildLeadAgentReply(store, { contact, conversation, inboundMessa
   const profile = classifyProfile(diagnostic);
   const temperature = classifyTemperature(diagnostic, text);
   const pathInfo = buildStudyPath(diagnostic, text, knowledge);
+  const signals = getDiagnosticSignals(diagnostic);
   const maxBubbles = Number(knowledge.conversation?.maxBubblesPerTurn || 3);
-  const messages = compactMessages(
+  const flowStage = getNextFlowStage({ session, intent, text });
+  const fallbackMessages = compactMessages(
     addOptionalVoice(
       buildMessages({
         contact,
@@ -469,11 +900,55 @@ export function buildLeadAgentReply(store, { contact, conversation, inboundMessa
         temperature,
         text,
         session,
+        flowStage,
       }),
       intent,
     ),
     maxBubbles,
   );
+  let messages = fallbackMessages;
+  let ai = null;
+  const useAiForScriptedFlow = process.env.LEAD_AGENT_AI_FOR_FLOW === "true";
+  const scriptedFlowStages = [
+    "explaining_first_step",
+    "showing_routine_model",
+    "qualifying_availability",
+    "handoff_requested",
+    "paused",
+  ];
+  const shouldUseAi = useAiForScriptedFlow || !scriptedFlowStages.includes(flowStage);
+
+  if (shouldUseAi) {
+    try {
+      ai = await buildAiLeadAgentReply({
+        contactName: firstName(contact),
+        inboundText: inboundMessage.body,
+        intent,
+        flowStage,
+        profile,
+        temperature,
+        areaLabel: pathInfo.areaLabel,
+        areaKey: pathInfo.areaKey,
+        phaseKey: pathInfo.phaseKey,
+        phaseReading: getPhaseReading(profile),
+        topics: pathInfo.topics.slice(0, 3),
+        diagnostic: signals,
+        openAnswer: signals.openAnswer,
+        method: knowledge.method,
+        communication: knowledge.communication,
+        leadArgument: getLeadArgument(signals, pathInfo),
+        turnCount: session.turnCount,
+        lastQuestion: session.lastQuestion,
+        fallbackMessages,
+      });
+
+      if (ai?.messages?.length) {
+        messages = compactMessages(ai.messages, maxBubbles);
+      }
+    } catch (error) {
+      console.warn(`IA do agente indisponivel, usando fallback local: ${error.message}`);
+    }
+  }
 
   session.turnCount += 1;
   session.lastIntent = intent;
@@ -481,6 +956,7 @@ export function buildLeadAgentReply(store, { contact, conversation, inboundMessa
   session.lastProfile = profile;
   session.lastTemperature = temperature;
   session.lastQuestion = messages[messages.length - 1]?.body || "";
+  session.flowStage = getStageAfterReply(flowStage, intent, diagnostic);
   session.recentInbound = [
     ...(session.recentInbound || []),
     {
@@ -495,13 +971,18 @@ export function buildLeadAgentReply(store, { contact, conversation, inboundMessa
     ...(session.outboundTimestamps || []),
     ...messages.map(() => now()),
   ].slice(-40);
-  session.handoffRequested = intent === "handoff" || session.handoffRequested;
+  session.handoffRequested =
+    Boolean(ai?.handoff) ||
+    flowStage === "handoff_requested" ||
+    intent === "handoff" ||
+    session.handoffRequested;
   session.suppressedReason = "";
   session.updatedAt = now();
 
   return {
     intent,
-    status: intent === "handoff" ? "pending" : "open",
+    handoff: session.handoffRequested,
+    status: session.handoffRequested ? "pending" : "open",
     messages,
     memory: {
       sessionId: session.id,
@@ -510,6 +991,8 @@ export function buildLeadAgentReply(store, { contact, conversation, inboundMessa
       temperature,
       area: pathInfo.areaKey,
       phase: pathInfo.phaseKey,
+      flowStage: session.flowStage,
+      aiProvider: ai ? process.env.LEAD_AGENT_AI_PROVIDER || "off" : "fallback",
     },
   };
 }

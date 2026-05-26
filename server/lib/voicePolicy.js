@@ -38,12 +38,21 @@ function getAudioMode() {
   return "off";
 }
 
+function normalizePolicyText(text = "") {
+  return String(text)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 function userAskedForAudio(text = "") {
-  return /\b(audio|áudio|voz|manda.*audio|manda.*áudio|me explica falando)\b/i.test(text);
+  return /\b(audio|voz|manda.*audio|me explica falando)\b/i.test(normalizePolicyText(text));
 }
 
 function userSoundsIrritated(text = "") {
-  return /\b(absurdo|irritad|chatead|cansad|nao quero|não quero|parem|spam)\b/i.test(text);
+  return /\b(absurdo|irritad|chatead|cansad|nao quero|parem|spam)\b/i.test(
+    normalizePolicyText(text),
+  );
 }
 
 function isInboundAudio(inboundMessage) {
@@ -79,6 +88,10 @@ export function shouldSendAudioReply({
 
   if (urgency === "alta" || intent === "urgencia") {
     return { allowed: false, reason: "urgency", sendTranscript };
+  }
+
+  if (agentReply?.handoff) {
+    return { allowed: false, reason: "handoff", sendTranscript };
   }
 
   if (BLOCKED_INTENTS.has(intent)) {

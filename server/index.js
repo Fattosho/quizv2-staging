@@ -15,6 +15,7 @@ import {
   writeStore,
 } from "./lib/store.js";
 import {
+  getAudioTranscriptionProvider,
   isAudioTranscriptionEnabled,
   transcribeAudioMessage,
 } from "./lib/audio.js";
@@ -25,6 +26,7 @@ import {
   getProviderMessageId,
   getWhatsAppMode,
   parseWebhookPayload,
+  resolveWahaPhoneId,
   sendSeen,
   sendTemplateMessage,
   sendTextMessage,
@@ -256,7 +258,7 @@ async function processAgentJobs(agentJobs) {
 
     await prepareInboundAudioForAgent(inboundMessage);
 
-    const agentReply = buildLeadAgentReply(store, {
+    const agentReply = await buildLeadAgentReply(store, {
       contact,
       conversation,
       inboundMessage,
@@ -291,7 +293,9 @@ app.get("/health", (_request, response) => {
     },
     leadAgent: {
       enabled: isLeadAgentEnabled(),
-      audioTranscription: isAudioTranscriptionEnabled() ? "elevenlabs" : "disabled",
+      aiProvider: process.env.LEAD_AGENT_AI_PROVIDER || "off",
+      maxBubbleChars: Number(process.env.LEAD_AGENT_MAX_BUBBLE_CHARS || 115),
+      audioTranscription: isAudioTranscriptionEnabled() ? getAudioTranscriptionProvider() : "disabled",
       audioReplies: process.env.ENABLE_AUDIO_REPLIES === "true" ? process.env.AUDIO_REPLY_MODE || "smart" : "disabled",
       tts: process.env.ENABLE_AUDIO_REPLIES === "true" ? process.env.TTS_PROVIDER || "elevenlabs" : "disabled",
     },
@@ -662,9 +666,10 @@ app.post("/webhooks/whatsapp", async (request, response) => {
 
   for (const event of events) {
     if (event.kind === "message") {
+      const resolvedPhone = await resolveWahaPhoneId(event.waId);
       const contact = upsertContact(store, {
         name: event.name,
-        phone: event.waId,
+        phone: resolvedPhone || event.phone || event.waId,
         waId: event.waId,
       });
       const conversation = ensureConversation(store, contact.id);

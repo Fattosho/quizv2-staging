@@ -1,6 +1,13 @@
 const EMOJI_PATTERN =
   /[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu;
 
+function normalizeForMatch(text = "") {
+  return String(text)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 export function cleanTextForSpeech(text = "") {
   return String(text)
     .replace(/\*\*(.*?)\*\*/g, "$1")
@@ -19,17 +26,18 @@ export function cleanTextForSpeech(text = "") {
 
 export function hasImportantWrittenData(text = "") {
   const value = String(text);
+  const normalized = normalizeForMatch(value);
 
   return [
-    /R\$\s?\d/i,
-    /\b\d{1,2}[/-]\d{1,2}([/-]\d{2,4})?\b/,
-    /\b\d{1,2}h(\d{2})?\b/i,
-    /\b\d{1,2}:\d{2}\b/,
-    /https?:\/\//i,
-    /\b(endereco|endereço|rua|avenida|av\.|bairro|cep)\b/i,
-    /\b(valor|preco|preço|pix|boleto|cartao|cartão|parcel)\b/i,
-    /\b(matricula|matrícula|contrato|checkout|link)\b/i,
-  ].some((pattern) => pattern.test(value));
+    /R\$\s?\d/i.test(value),
+    /\b\d{1,2}[/-]\d{1,2}([/-]\d{2,4})?\b/.test(value),
+    /\b\d{1,2}h(\d{2})?\b/i.test(value),
+    /\b\d{1,2}:\d{2}\b/.test(value),
+    /https?:\/\//i.test(value),
+    /\b(endereco|rua|avenida|av\.|bairro|cep)\b/i.test(normalized),
+    /\b(valor|preco|pix|boleto|cartao|parcel)\b/i.test(normalized),
+    /\b(matricula|contrato|checkout|link)\b/i.test(normalized),
+  ].some(Boolean);
 }
 
 export function estimateSpeechDurationSeconds(text = "") {
