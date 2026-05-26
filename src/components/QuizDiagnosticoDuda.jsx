@@ -199,6 +199,17 @@ function isSubmitPayloadValid(formData) {
   );
 }
 
+function sendLegacyWebhook(payload) {
+  return fetch(LEGACY_WEBHOOK_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
 function RadioGroup({ group, value, onChange, compact = false }) {
   return (
     <fieldset className={`quiz-fieldset ${compact ? "quiz-fieldset--compact" : ""}`}>
@@ -428,20 +439,27 @@ export default function QuizDiagnosticoDuda() {
     // Envio real + tempo mínimo de exibição da tela de análise em paralelo.
     const submitRequest = api
       .createDiagnostic(payload)
+      .then((result) => {
+        if (result?.sheetsForwardError) {
+          console.warn(
+            "Google Sheets nao confirmou o recebimento pelo backend; acionando fallback do navegador.",
+            result.sheetsForwardError,
+          );
+          return sendLegacyWebhook(payload)
+            .catch((legacyError) => {
+              console.error("Erro ao enviar diagnostico para a planilha", legacyError);
+            })
+            .then(() => result);
+        }
+
+        return result;
+      })
       .catch((error) => {
         console.error("Erro ao enviar diagnostico para o CRM", error);
-        return fetch(LEGACY_WEBHOOK_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "text/plain;charset=utf-8",
-          },
-          body: JSON.stringify(payload),
-        }).catch((legacyError) => {
+        return sendLegacyWebhook(payload).catch((legacyError) => {
           console.error("Erro ao enviar diagnostico", legacyError);
         });
-      console.error("Erro ao enviar diagnóstico", error);
-    });
+      });
 
     await Promise.allSettled([submitRequest, sleep(ANALYZING_MIN_DURATION)]);
 

@@ -22,6 +22,7 @@ import {
 import { buildAudioReplyPlan, getAudioFallbackText } from "./lib/audioReplyManager.js";
 import { forwardLeadToGroup } from "./lib/groupNotifier.js";
 import { buildLeadAgentReply, isLeadAgentEnabled } from "./lib/leadAgent.js";
+import { forwardLeadToSheets } from "./lib/sheetsNotifier.js";
 import {
   getProviderMessageId,
   getWhatsAppMode,
@@ -303,6 +304,10 @@ app.get("/health", (_request, response) => {
       enabled: process.env.LEAD_GROUP_FORWARD_ENABLED === "true",
       configured: Boolean(process.env.LEAD_GROUP_CHAT_ID),
     },
+    googleSheetsForward: {
+      enabled: process.env.GOOGLE_SHEETS_FORWARD_ENABLED !== "false",
+      configured: true,
+    },
   });
 });
 
@@ -338,6 +343,8 @@ app.post("/api/diagnostics", async (request, response) => {
   let firstContactError = null;
   let groupForward = null;
   let groupForwardError = null;
+  let sheetsForward = null;
+  let sheetsForwardError = null;
 
   if (process.env.AUTO_SEND_FIRST_CONTACT === "true") {
     try {
@@ -367,6 +374,19 @@ app.post("/api/diagnostics", async (request, response) => {
     };
   }
 
+  try {
+    sheetsForward = await forwardLeadToSheets({
+      contact: result.contact,
+      diagnostic: result.diagnostic,
+    });
+  } catch (error) {
+    console.error("Erro ao enviar lead para Google Sheets", error);
+    sheetsForwardError = {
+      message: error.message,
+      meta: error.meta || null,
+    };
+  }
+
   writeStore(store);
   response.status(201).json({
     ...result,
@@ -374,6 +394,8 @@ app.post("/api/diagnostics", async (request, response) => {
     firstContactError,
     groupForward,
     groupForwardError,
+    sheetsForward,
+    sheetsForwardError,
   });
 });
 
