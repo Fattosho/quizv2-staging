@@ -12,6 +12,13 @@ function formatValue(value, fallback = "-") {
   return String(value || "").trim() || fallback;
 }
 
+function formatShortValue(value, fallback = "-", maxLength = 90) {
+  const text = formatValue(value, fallback)
+    .replace(/\uFFFD+/g, "")
+    .replace(/\s+/g, " ");
+  return text.length > maxLength ? `${text.slice(0, maxLength - 3).trim()}...` : text;
+}
+
 function getLeadDiagnostic(diagnostic) {
   return buildPersonalizedDiagnostic({
     studyPhase: diagnostic?.studyPhase || "",
@@ -46,34 +53,23 @@ export function buildLeadGroupMessage({ contact, diagnostic }) {
   const score = getLeadScore(diagnostic, leadDiagnostic);
 
   return [
-    "Novo lead do quiz Duda Farage",
+    "🚨 Novo lead Duda Farage",
     "",
-    `Nome: ${formatValue(contact?.name || diagnostic?.name)}`,
-    `WhatsApp: ${formatValue(contact?.phone || diagnostic?.whatsapp)}`,
-    `Score: ${score}/100`,
+    `👤 ${formatValue(contact?.name || diagnostic?.name)}`,
+    `📲 ${formatValue(contact?.phone || diagnostic?.whatsapp)}`,
+    `🔥 Score: ${score}/100`,
     "",
-    `Diagnóstico personalizado: ${leadDiagnostic.diagnosticTitle}`,
-    `Arquétipo principal: ${leadDiagnostic.archetypeName}`,
-    `Área específica: ${leadDiagnostic.areaName}`,
+    `🧠 ${leadDiagnostic.diagnosticTitle}`,
+    `📚 Trava: ${leadDiagnostic.areaName}`,
     "",
-    "Base do diagnóstico:",
-    `Fase/dor marcada: ${formatValue(diagnostic?.studyPhase)}`,
-    `Matéria em que mais trava: ${formatValue(diagnostic?.blockedArea)}`,
+    `🎯 Objetivo: ${formatShortValue(diagnostic?.objective)}`,
+    `🗓️ Prova: ${formatShortValue(diagnostic?.examWhen)}`,
+    `💬 Interesse: ${formatShortValue(diagnostic?.interest)}`,
     "",
-    "Respostas do quiz:",
-    `Objetivo: ${formatValue(diagnostic?.objective)}`,
-    `Quando vai fazer: ${formatValue(diagnostic?.examWhen)}`,
-    `Frustração: ${formatValue(diagnostic?.frustration)}`,
-    `Rotina guiada: ${formatValue(diagnostic?.guidedRoutine)}`,
-    `Interesse: ${formatValue(diagnostic?.interest)}`,
+    `⚠️ Dor: ${formatShortValue(diagnostic?.studyPhase)}`,
+    `😣 Frustração: ${formatShortValue(diagnostic?.frustration)}`,
     "",
-    "Leitura rápida para o atendimento:",
-    leadDiagnostic.summary,
-    "",
-    `Resposta aberta: ${formatValue(diagnostic?.openAnswer)}`,
-    "",
-    "Próxima ação sugerida:",
-    leadDiagnostic.recommendedAction,
+    `✅ Abordagem: ${formatShortValue(leadDiagnostic.recommendedAction, "-", 140)}`,
   ].join("\n");
 }
 
