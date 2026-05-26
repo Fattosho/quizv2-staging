@@ -20,8 +20,6 @@ const QUIZ_THEME = {
 const LEGACY_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbw2_eBFwo3XqSZB19XkCmYVrR-1GFFVLV1SLDnpUP3PMv5BQKEgGbafuJrwaKahoi4yyg/exec";
 
-const WHATSAPP_BUSINESS_NUMBER = import.meta.env.VITE_WHATSAPP_BUSINESS_NUMBER || "";
-
 const INITIAL_ANSWERS = {
   objective: "",
   name: "",
@@ -68,7 +66,7 @@ const STEP_THREE_GROUPS = [
       "Já estudo, mas não tenho uma rotina constante",
       "Estudo bastante, mas minha nota não sobe",
       "Tenho uma base boa, mas ainda perco pontos que não deveria",
-      "Me sinto perdida(o) e não sei o que priorizar",
+      "Me sinto sem direção e não sei o que priorizar",
     ],
   },
   {
@@ -329,7 +327,6 @@ export default function QuizDiagnosticoDuda() {
   const [answers, setAnswers] = useState(INITIAL_ANSWERS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [submissionResult, setSubmissionResult] = useState(null);
 
   const submitLockRef = useRef(false);
 
@@ -431,10 +428,6 @@ export default function QuizDiagnosticoDuda() {
     // Envio real + tempo mínimo de exibição da tela de análise em paralelo.
     const submitRequest = api
       .createDiagnostic(payload)
-      .then((result) => {
-        setSubmissionResult(result);
-        return result;
-      })
       .catch((error) => {
         console.error("Erro ao enviar diagnostico para o CRM", error);
         return fetch(LEGACY_WEBHOOK_URL, {
@@ -469,13 +462,6 @@ export default function QuizDiagnosticoDuda() {
   const isDense = displayStep === 2 || displayStep === 3;
   const showProgress = displayStep >= 1 && displayStep <= 4;
   const exitClass = isExiting ? " quiz-screen--exit" : "";
-  const diagnosticId = submissionResult?.diagnostic?.id;
-  const whatsappDiagnosticLink =
-    WHATSAPP_BUSINESS_NUMBER && diagnosticId
-      ? `https://wa.me/${WHATSAPP_BUSINESS_NUMBER.replace(/\D/g, "")}?text=${encodeURIComponent(
-          `Quero receber meu diagnostico ${diagnosticId}`,
-        )}`
-      : "";
 
   return (
     <main className="quiz-page" style={themeVars}>
@@ -505,7 +491,7 @@ export default function QuizDiagnosticoDuda() {
               <p className="quiz-kicker">Diagnóstico personalizado</p>
               <h1>
                 <span>Não sabe por onde começar?</span>
-                <span>Já estuda, mas continua travada?</span>
+                <span>Já estuda, mas continua travando?</span>
                 <strong>Ou está a poucos pontos da aprovação?</strong>
               </h1>
               <p>
@@ -618,7 +604,7 @@ export default function QuizDiagnosticoDuda() {
               <strong>me conta onde você sente que está hoje.</strong>
               <textarea
                 onChange={(event) => updateAnswer("blocker", event.target.value)}
-                placeholder="Ex: começando do zero, travada, perdida no estudo, ou por pouco da aprovação"
+                placeholder="Ex: começando do zero, travando nos estudos, sem direção, ou por pouco da aprovação"
                 rows={4}
                 value={answers.blocker}
               />
@@ -663,19 +649,8 @@ export default function QuizDiagnosticoDuda() {
                 <strong> WhatsApp</strong> com uma orientação sobre o seu próximo
                 passo para acessar o método da Duda.
               </p>
-              {diagnosticId && (
-                <div className="success-notice">
-                  <strong>ID do atendimento:</strong> {diagnosticId}. Ele ja esta
-                  disponivel no CRM.
-                </div>
-              )}
-              {whatsappDiagnosticLink && (
-                <a className="quiz-whatsapp-link" href={whatsappDiagnosticLink}>
-                  Receber agora no WhatsApp
-                </a>
-              )}
               <div className="success-notice">
-                <strong>Fique atenta:</strong> as condições de acesso antecipado
+                <strong>Fique de olho:</strong> as condições de acesso antecipado
                 serão liberadas primeiro para quem respondeu o diagnóstico.
               </div>
             </div>

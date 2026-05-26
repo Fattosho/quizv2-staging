@@ -82,45 +82,65 @@ function phoneVariants(phone = "") {
   return [...variants].filter(Boolean);
 }
 
+function normalizeDiagnosticText(value = "") {
+  return String(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
 export function createId(prefix) {
   return `${prefix}_${randomUUID().slice(0, 8)}`;
 }
 
 function classifyDiagnostic(answers) {
+  const studyPhase = normalizeDiagnosticText(answers.studyPhase);
+  const interest = normalizeDiagnosticText(answers.interest);
+
   const profileRules = [
     {
       profile: "travada_sem_rotina",
-      match: answers.studyPhase?.includes("sem rotina"),
+      match: studyPhase.includes("sem rotina") || studyPhase.includes("rotina constante"),
       summary:
-        "O maior gargalo parece ser constancia. Ela ja tem contato com os estudos, mas falta um plano semanal claro e revisao guiada.",
+        "O maior gargalo parece ser constancia. Ja existe contato com os estudos, mas falta um plano semanal claro e revisao guiada.",
       recommendedAction:
         "Enviar plano de rotina guiada, reforcar acompanhamento e propor proximo passo com a equipe.",
     },
     {
-      profile: "comecando_do_zero",
+      profile: "sem_direcao",
       match:
-        answers.studyPhase?.includes("zero") ||
-        answers.studyPhase?.includes("perdido"),
+        studyPhase.includes("sem direcao") ||
+        studyPhase.includes("priorizar") ||
+        studyPhase.includes("perdido"),
       summary:
-        "A aluna precisa de direcao inicial. O diagnostico indica dificuldade para organizar a base e decidir por onde comecar.",
+        "O diagnostico indica dificuldade para organizar prioridades e decidir por onde comecar.",
+      recommendedAction:
+        "Enviar mensagem acolhedora, explicar a primeira prioridade e convidar para entender a preparacao guiada.",
+    },
+    {
+      profile: "comecando_do_zero",
+      match: studyPhase.includes("zero"),
+      summary:
+        "O diagnostico indica necessidade de direcao inicial para organizar a base e decidir por onde comecar.",
       recommendedAction:
         "Enviar mensagem acolhedora, explicar trilha inicial e convidar para entender a preparacao guiada.",
     },
     {
       profile: "nota_estagnada",
-      match: answers.studyPhase?.includes("nota nao sobe"),
+      match: studyPhase.includes("nota nao sobe"),
       summary:
-        "A aluna estuda, mas provavelmente esta repetindo um metodo que nao transforma erro em evolucao mensuravel.",
+        "Existe estudo, mas provavelmente com um metodo que nao transforma erro em evolucao mensuravel.",
       recommendedAction:
         "Falar sobre analise de erros, revisao ativa e estrategia por area de maior impacto.",
     },
     {
       profile: "alta_intencao",
       match:
-        answers.interest?.includes("quero muito") ||
-        answers.interest?.includes("entender melhor"),
+        interest.includes("quero muito") ||
+        interest.includes("entender melhor"),
       summary:
-        "A aluna demonstrou alta intencao de entrar em uma preparacao guiada e deve ser priorizada no atendimento.",
+        "Lead demonstrou alta intencao de entrar em uma preparacao guiada e deve ter prioridade no atendimento.",
       recommendedAction:
         "Responder rapidamente, apresentar diagnostico curto e conduzir para uma conversa de matricula.",
     },

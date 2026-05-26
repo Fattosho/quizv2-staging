@@ -1250,22 +1250,6 @@ textarea {
   color: var(--quiz-accent);
 }
 
-.quiz-whatsapp-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  border: 1px solid color-mix(in srgb, var(--quiz-accent) 64%, transparent);
-  border-radius: 999px;
-  padding: 10px 16px;
-  background: color-mix(in srgb, var(--quiz-accent) 16%, var(--quiz-input-bg));
-  color: var(--quiz-button-text);
-  font-size: 12px;
-  font-weight: 750;
-  line-height: 1.1;
-  text-decoration: none;
-}
-
 /* ══ RESPONSIVE ═════════════════════════════ */
 @media (max-width: 520px) {
   .quiz-page {

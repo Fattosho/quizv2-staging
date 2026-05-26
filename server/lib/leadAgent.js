@@ -176,7 +176,15 @@ function classifyProfile(diagnostic) {
   const studyPhase = normalizeText(diagnostic?.studyPhase);
   const interest = normalizeText(diagnostic?.interest);
 
-  if (studyPhase.includes("zero") || studyPhase.includes("perdido")) {
+  if (
+    studyPhase.includes("sem direcao") ||
+    studyPhase.includes("priorizar") ||
+    studyPhase.includes("perdido")
+  ) {
+    return "sem_direcao";
+  }
+
+  if (studyPhase.includes("zero")) {
     return "comecando_do_zero";
   }
 
@@ -255,7 +263,7 @@ function detectAreaKey(diagnostic, text, knowledge) {
 }
 
 function detectPhaseKey(profile) {
-  if (["comecando_do_zero", "sem_rotina"].includes(profile)) {
+  if (["comecando_do_zero", "sem_rotina", "sem_direcao"].includes(profile)) {
     return "phase1";
   }
 
@@ -274,41 +282,41 @@ function getPhaseReading(profile) {
   if (profile === "iniciante" || profile === "comecando_do_zero") {
     return {
       label: "O Iniciante",
-      message: "a aluna precisa construir base, rotina e ordem de estudo",
+      message: "precisa construir base, rotina e ordem de estudo",
     };
   }
 
   if (profile === "inconstante" || profile === "sem_rotina") {
     return {
       label: "O Inconstante",
-      message: "a aluna precisa transformar esforco solto em rotina guiada",
+      message: "precisa transformar esforco solto em rotina guiada",
     };
   }
 
   if (profile === "quase_la" || profile === "base_boa" || profile === "alta_intencao") {
     return {
       label: "O Quase Lá",
-      message: "a aluna precisa refinar revisao, estrategia e perda de pontos",
+      message: "precisa refinar revisao, estrategia e perda de pontos",
     };
   }
 
   if (profile === "esforcado_travado" || profile === "nota_estagnada") {
     return {
       label: "O Esforçado Travado",
-      message: "a aluna precisa de analise de erro, metodo e refinamento",
+      message: "precisa de analise de erro, metodo e refinamento",
     };
   }
 
   if (profile === "sem_direcao") {
     return {
       label: "O Sem Direção",
-      message: "a aluna precisa de prioridade clara e trilha de estudo",
+      message: "precisa de prioridade clara e trilha de estudo",
     };
   }
 
   return {
     label: "diagnostico educacional",
-    message: "a lead precisa de uma trilha clara a partir do momento atual",
+    message: "precisa de uma trilha clara a partir do momento atual",
   };
 }
 
@@ -453,7 +461,12 @@ function getLeadArgument(signals, pathInfo) {
     return "O ponto e transformar erro em revisao, nao so fazer mais questoes.";
   }
 
-  if (studyPhase.includes("zero") || studyPhase.includes("perdido")) {
+  if (
+    studyPhase.includes("zero") ||
+    studyPhase.includes("sem direcao") ||
+    studyPhase.includes("priorizar") ||
+    studyPhase.includes("perdido")
+  ) {
     return `Antes de acelerar, vale construir base em ${pathInfo.areaLabel}.`;
   }
 
@@ -756,7 +769,7 @@ function buildMessages({
       `${greeting} recebi seu audio.`,
       diagnostic
         ? `Pelo quiz, eu olharia primeiro para ${areaLabel}.`
-        : "Voce sente que esta comecando do zero, sem rotina ou travada mesmo estudando?",
+        : "Voce sente que esta comecando do zero, sem rotina ou travando mesmo estudando?",
     ];
   }
 

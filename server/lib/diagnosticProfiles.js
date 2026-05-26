@@ -4,7 +4,7 @@ const ARCHETYPES = [
     name: "O Iniciante",
     matches: ["estou comecando do zero", "comecando do zero"],
     summary:
-      "A lead está no ponto de partida: precisa construir base, rotina e ordem antes de acelerar.",
+      "Ponto de partida: precisa construir base, rotina e ordem antes de acelerar.",
     action:
       "Começar pela base da área travada, com uma rotina guiada simples e acompanhamento de evolução.",
   },
@@ -17,7 +17,7 @@ const ARCHETYPES = [
       "sem rotina",
     ],
     summary:
-      "A lead já tem contato com os estudos, mas falta constância e uma rotina que não dependa de ânimo.",
+      "Já existe contato com os estudos, mas falta constância e uma rotina que não dependa de ânimo.",
     action:
       "Organizar uma rotina semanal realista, com revisão e prioridade clara na área de maior trava.",
   },
@@ -26,7 +26,7 @@ const ARCHETYPES = [
     name: "O Esforçado Travado",
     matches: ["estudo bastante mas minha nota nao sobe", "nota nao sobe"],
     summary:
-      "A lead se esforça, mas a nota não sobe porque os erros ainda não estão virando revisão e ajuste de método.",
+      "Existe esforço, mas a nota não sobe porque os erros ainda não estão virando revisão e ajuste de método.",
     action:
       "Fazer análise de erros, revisar os pontos de maior impacto e trocar volume solto por treino direcionado.",
   },
@@ -39,7 +39,7 @@ const ARCHETYPES = [
       "base boa",
     ],
     summary:
-      "A lead já tem base, mas ainda perde pontos evitáveis por falta de refinamento, revisão e estratégia.",
+      "Já existe base, mas ainda há perda de pontos evitáveis por falta de refinamento, revisão e estratégia.",
     action:
       "Refinar a revisão, mapear perdas recorrentes e treinar questões mais direcionadas da área travada.",
   },
@@ -47,6 +47,8 @@ const ARCHETYPES = [
     key: "sem_direcao",
     name: "O Sem Direção",
     matches: [
+      "me sinto sem direcao e nao sei o que priorizar",
+      "sem direcao",
       "me sinto perdido e nao sei o que priorizar",
       "me sinto perdidao e nao sei o que priorizar",
       "me sinto perdida e nao sei o que priorizar",
@@ -55,7 +57,7 @@ const ARCHETYPES = [
       "priorizar",
     ],
     summary:
-      "A lead precisa de direção: o principal gargalo é saber o que estudar primeiro e o que deixar para depois.",
+      "Falta direção: o principal gargalo é saber o que estudar primeiro e o que deixar para depois.",
     action:
       "Definir uma primeira prioridade, montar uma trilha curta e evitar tentar resolver todas as matérias ao mesmo tempo.",
   },
