@@ -1,10 +1,9 @@
 const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
-const sameOriginApiBaseUrl =
-  typeof window !== "undefined" ? window.location.origin.replace(/\/$/, "") : "";
+const productionApiBaseUrl = "https://duda-farage-crm-production.up.railway.app";
 
 const API_BASE_URL =
   configuredApiBaseUrl ||
-  (import.meta.env.DEV ? "http://localhost:8080" : sameOriginApiBaseUrl) ||
+  (import.meta.env.DEV ? "http://localhost:8080" : productionApiBaseUrl) ||
   "http://localhost:8080";
 
 async function request(path, options = {}) {
