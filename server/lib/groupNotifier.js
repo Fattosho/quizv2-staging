@@ -19,6 +19,14 @@ function formatShortValue(value, fallback = "-", maxLength = 90) {
   return text.length > maxLength ? `${text.slice(0, maxLength - 3).trim()}...` : text;
 }
 
+function getQuizUrl() {
+  return String(
+    process.env.QUIZ_URL ||
+      process.env.PUBLIC_QUIZ_URL ||
+      "https://dudafaragequiz.vercel.app/",
+  ).replace(/\/?$/, "/");
+}
+
 function getLeadDiagnostic(diagnostic) {
   return buildPersonalizedDiagnostic({
     studyPhase: diagnostic?.studyPhase || "",
@@ -58,6 +66,7 @@ export function buildLeadGroupMessage({ contact, diagnostic }) {
     `👤 ${formatValue(contact?.name || diagnostic?.name)}`,
     `📲 ${formatValue(contact?.phone || diagnostic?.whatsapp)}`,
     `🔥 Score: ${score}/100`,
+    `🔗 Quiz: ${getQuizUrl()}`,
     "",
     `🧠 ${leadDiagnostic.diagnosticTitle}`,
     `📚 Trava: ${leadDiagnostic.areaName}`,
