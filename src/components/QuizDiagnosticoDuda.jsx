@@ -18,7 +18,7 @@ const QUIZ_THEME = {
 };
 
 const LEGACY_WEBHOOK_URL =
-  "https://script.google.com/macros/s/AKfycbw2_eBFwo3XqSZB19XkCmYVrR-1GFFVLV1SLDnpUP3PMv5BQKEgGbafuJrwaKahoi4yyg/exec";
+  "https://script.google.com/macros/s/AKfycbwsZ-uhIvvE76gWZePXmSiNeToY1ten0PgrFYij14YvJJPfe0FHmPFY_e1MmH1VF-Zq/exec";
 
 const INITIAL_ANSWERS = {
   objective: "",
@@ -505,9 +505,12 @@ export default function QuizDiagnosticoDuda() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     // Envio real + tempo mínimo de exibição da tela de análise em paralelo.
+    let submitSucceeded = false;
+    let submitFailure = null;
     const submitRequest = api
       .createDiagnostic(payload)
       .then((result) => {
+        submitSucceeded = true;
         const sheetsForwardConfirmed =
           result?.sheetsForward && !result?.sheetsForwardError;
 
@@ -527,12 +530,33 @@ export default function QuizDiagnosticoDuda() {
       })
       .catch((error) => {
         console.error("Erro ao enviar diagnostico para o CRM", error);
-        return sendLegacyWebhook(payload).catch((legacyError) => {
-          console.error("Erro ao enviar diagnostico", legacyError);
-        });
+        submitFailure = error;
+        return null;
       });
 
     await Promise.allSettled([submitRequest, sleep(ANALYZING_MIN_DURATION)]);
+
+    if (!submitSucceeded) {
+      const isWhatsappError =
+        submitFailure?.code === "INVALID_WHATSAPP" || submitFailure?.status === 400;
+
+      setIsExiting(true);
+      await sleep(EXIT_DURATION);
+
+      setDisplayStep(isWhatsappError ? 1 : 4);
+      setCurrentStep(isWhatsappError ? 1 : 4);
+      setSubmitError(
+        isWhatsappError
+          ? submitFailure?.message || WHATSAPP_ERROR_MESSAGE
+          : "Não conseguimos enviar agora. Confira sua conexão e tente novamente.",
+      );
+      setWasWhatsappTouched(isWhatsappError);
+      setIsExiting(false);
+      setIsSubmitting(false);
+      submitLockRef.current = false;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
 
     console.log("Quiz Diagnóstico Duda", payload);
 
@@ -632,6 +656,12 @@ export default function QuizDiagnosticoDuda() {
             {showWhatsappError && (
               <p className="quiz-field-error" id="whatsapp-error" role="alert">
                 {whatsappValidation.message}
+              </p>
+            )}
+
+            {submitError && !showWhatsappError && (
+              <p className="quiz-field-error" role="alert">
+                {submitError}
               </p>
             )}
 

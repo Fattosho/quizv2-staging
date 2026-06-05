@@ -18,7 +18,11 @@ async function request(path, options = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(data?.error || "Erro na API");
+    const error = new Error(data?.error || "Erro na API");
+    error.status = response.status;
+    error.code = data?.code || "";
+    error.meta = data?.meta || null;
+    throw error;
   }
 
   return data;
