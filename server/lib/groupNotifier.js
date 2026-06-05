@@ -77,6 +77,8 @@ export function buildLeadGroupMessage({ contact, diagnostic }) {
     "",
     `⚠️ Dor: ${formatShortValue(diagnostic?.studyPhase)}`,
     `😣 Frustração: ${formatShortValue(diagnostic?.frustration)}`,
+    "",
+    `✅ Abordagem: ${formatShortValue(leadDiagnostic.recommendedAction, "-", 190)}`,
   ].join("\n");
 }
 
