@@ -1,10 +1,15 @@
 const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "");
 const productionApiBaseUrl = "https://duda-farage-crm-production.up.railway.app";
+const isLocalApiBaseUrl = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(
+  configuredApiBaseUrl || "",
+);
 
 const API_BASE_URL =
-  configuredApiBaseUrl ||
-  (import.meta.env.DEV ? "http://localhost:8080" : productionApiBaseUrl) ||
-  "http://localhost:8080";
+  import.meta.env.DEV
+    ? configuredApiBaseUrl || "http://localhost:8080"
+    : isLocalApiBaseUrl
+      ? productionApiBaseUrl
+      : configuredApiBaseUrl || productionApiBaseUrl;
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
