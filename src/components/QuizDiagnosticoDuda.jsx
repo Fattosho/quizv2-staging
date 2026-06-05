@@ -119,13 +119,71 @@ const STEP_FOUR_GROUPS = [
   },
 ];
 
+const VALID_BRAZIL_DDDS = new Set([
+  "11", "12", "13", "14", "15", "16", "17", "18", "19",
+  "21", "22", "24", "27", "28",
+  "31", "32", "33", "34", "35", "37", "38",
+  "41", "42", "43", "44", "45", "46", "47", "48", "49",
+  "51", "53", "54", "55",
+  "61", "62", "63", "64", "65", "66", "67", "68", "69",
+  "71", "73", "74", "75", "77", "79",
+  "81", "82", "83", "84", "85", "86", "87", "88", "89",
+  "91", "92", "93", "94", "95", "96", "97", "98", "99",
+]);
+
+const WHATSAPP_ERROR_MESSAGE =
+  "Digite um WhatsApp valido com DDD. Ex: (11) 99999-9999";
+
+function onlyDigits(value = "") {
+  return String(value).replace(/\D/g, "");
+}
+
+function getBrazilWhatsappDigits(value = "") {
+  const digits = onlyDigits(value);
+
+  if (digits.startsWith("55") && digits.length === 13) {
+    return digits.slice(2);
+  }
+
+  return digits.slice(0, 11);
+}
+
+function isSequentialDigits(value) {
+  return (
+    "01234567890123456789".includes(value) ||
+    "98765432109876543210".includes(value)
+  );
+}
+
+function validateWhatsapp(value = "") {
+  const digits = getBrazilWhatsappDigits(value);
+  const ddd = digits.slice(0, 2);
+  const number = digits.slice(2);
+  const isValid =
+    digits.length === 11 &&
+    VALID_BRAZIL_DDDS.has(ddd) &&
+    number.startsWith("9") &&
+    !/^(\d)\1+$/.test(digits) &&
+    !isSequentialDigits(digits);
+
+  return {
+    digits,
+    isValid,
+    message: isValid ? "" : WHATSAPP_ERROR_MESSAGE,
+  };
+}
+
+function isValidWhatsapp(value = "") {
+  return validateWhatsapp(value).isValid;
+}
+
 const STEP_VALIDATORS = [
   () => true,
   (answers) =>
     Boolean(
       answers.objective &&
         answers.name.trim() &&
-        answers.whatsapp.replace(/\D/g, "").length >= 10,
+        isValidWhatsapp(answers.whatsapp),
     ),
   (answers) =>
     Boolean(answers.examWhen && answers.studyPhase && answers.blockedArea),
@@ -155,7 +213,7 @@ const ANALYZING_MIN_DURATION = 3200;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function maskWhatsapp(value) {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
+  const digits = getBrazilWhatsappDigits(value);
 
   if (digits.length <= 2) {
     return digits ? `(${digits}` : "";
@@ -194,7 +252,7 @@ function isSubmitPayloadValid(formData) {
   return Boolean(
     formData.nome &&
       formData.whatsapp &&
-      formData.whatsapp.replace(/\D/g, "").length >= 10 &&
+      isValidWhatsapp(formData.whatsapp) &&
       formData.respostaAberta,
   );
 }
@@ -338,6 +396,7 @@ export default function QuizDiagnosticoDuda() {
   const [answers, setAnswers] = useState(INITIAL_ANSWERS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [wasWhatsappTouched, setWasWhatsappTouched] = useState(false);
 
   const submitLockRef = useRef(false);
 
@@ -362,6 +421,13 @@ export default function QuizDiagnosticoDuda() {
     currentStep >= 0 && currentStep < STEP_VALIDATORS.length
       ? STEP_VALIDATORS[currentStep](answers)
       : true;
+  const whatsappValidation = validateWhatsapp(answers.whatsapp);
+  const showWhatsappError = Boolean(
+    displayStep === 1 &&
+      answers.whatsapp &&
+      !whatsappValidation.isValid &&
+      (wasWhatsappTouched || whatsappValidation.digits.length >= 11),
+  );
 
   function updateAnswer(field, value) {
     setSubmitError("");
@@ -402,7 +468,9 @@ export default function QuizDiagnosticoDuda() {
 
     if (!isCurrentStepValid || !isSubmitPayloadValid(formData)) {
       setSubmitError(
-        "Não conseguimos enviar agora. Tente novamente em alguns segundos.",
+        !isValidWhatsapp(formData.whatsapp)
+          ? WHATSAPP_ERROR_MESSAGE
+          : "Não conseguimos enviar agora. Tente novamente em alguns segundos.",
       );
       return;
     }
@@ -547,16 +615,25 @@ export default function QuizDiagnosticoDuda() {
             <label className="quiz-input-group">
               <span>Qual seu WhatsApp?</span>
               <input
+                aria-describedby={showWhatsappError ? "whatsapp-error" : undefined}
+                aria-invalid={showWhatsappError}
                 autoComplete="tel"
                 inputMode="tel"
                 onChange={(event) =>
                   updateAnswer("whatsapp", maskWhatsapp(event.target.value))
                 }
+                onBlur={() => setWasWhatsappTouched(true)}
                 placeholder="(00) 00000-0000"
                 type="tel"
                 value={answers.whatsapp}
               />
             </label>
+
+            {showWhatsappError && (
+              <p className="quiz-field-error" id="whatsapp-error" role="alert">
+                {whatsappValidation.message}
+              </p>
+            )}
 
             <p className="quiz-hint">
               É por aqui que nossa equipe vai te enviar o diagnóstico

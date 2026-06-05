@@ -813,6 +813,24 @@ textarea {
     0 0 24px color-mix(in srgb, var(--quiz-accent) 11%, transparent);
 }
 
+.quiz-input-group input[aria-invalid="true"] {
+  border-color: var(--quiz-danger);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--quiz-danger) 14%, transparent),
+    0 0 20px color-mix(in srgb, var(--quiz-danger) 10%, transparent);
+}
+
+.quiz-field-error {
+  max-width: 240px;
+  margin: 4px auto 0;
+  color: var(--quiz-danger);
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+}
+
 .quiz-hint {
   max-width: 210px;
   margin: 18px auto 16px;
